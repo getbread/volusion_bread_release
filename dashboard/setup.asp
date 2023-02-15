@@ -51,7 +51,7 @@
 		<div class="form-group">
 			<label for="bread_platform_api_key" class="col-md-2 control-label">Bread 2.0 API Key</label>
 			<div class="col-md-6">
-				<input type="text" id="bread__platform_api_key" name="bread_platform_api_key" class="form-control" value="<% = dct_setup("bread_platform_api_key") %>">
+				<input type="text" id="bread_platform_api_key" name="bread_platform_api_key" class="form-control" value="<% = dct_setup("bread_platform_api_key") %>">
 			</div>
 		</div>
 		<div class="form-group">
