@@ -134,7 +134,7 @@ Class BreadAPI
 		
 		http.Open method, request_url, False
 		http.setRequestHeader "Content-Type", "application/json"
-		http.setRequestHeader "Authorization", dct_settings("bread_auth")
+		http.setRequestHeader "Authorization", dct_settings("bread_classic_auth")
 		
 		If dct_settings("debug_mode") = "on" Then
 			Set bread_fso = Server.CreateObject("Scripting.FileSystemObject")
@@ -142,7 +142,7 @@ Class BreadAPI
 			bread_log.WriteLine( "-------------------------------" )
 			bread_log.WriteLine( "Request Url: " & request_url )
 			bread_log.WriteLine( "Method: " &  method )
-			bread_log.WriteLine( "Authorization: " & dct_settings("bread_auth") )
+			bread_log.WriteLine( "Authorization: " & dct_settings("bread_classic_auth") )
 			bread_log.WriteLine( "Payload: " & jsonHelper.Encode( payload ) )
 		End If	
 			

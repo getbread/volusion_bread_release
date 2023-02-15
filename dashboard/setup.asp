@@ -46,24 +46,49 @@
 			</select>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="bread_api_key" class="col-md-2 control-label">Bread API Key</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_api_key" name="bread_api_key" class="form-control" value="<% = dct_setup("bread_api_key") %>">
+	<div class="platform-api-info">
+		<h4>Bread 2.0</h4>
+		<div class="form-group">
+			<label for="bread_platform_api_key" class="col-md-2 control-label">Bread 2.0 API Key</label>
+			<div class="col-md-6">
+				<input type="text" id="bread__platform_api_key" name="bread_platform_api_key" class="form-control" value="<% = dct_setup("bread_platform_api_key") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_platform_api_secret" class="col-md-2 control-label">Bread 2.0 API Secret</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_platform_api_secret" name="bread_platform_api_secret" class="form-control" value="<% = dct_setup("bread_platform_api_secret") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_platform_integration_key" class="col-md-2 control-label">Bread 2.0 Integration Key</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_platform_integration_key" name="bread_platform_integration_key" class="form-control" value="<% = dct_setup("bread_platform_integration_key") %>">
+			</div>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="bread_api_secret" class="col-md-2 control-label">Bread API Secret</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_api_secret" name="bread_api_secret" class="form-control" value="<% = dct_setup("bread_api_secret") %>">
+	<div class="classic-api-info">
+		<h4>Bread Classic</h4>
+		<div class="form-group">
+			<label for="bread_classic_api_key" class="col-md-2 control-label">Bread Classic API Key</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_api_key" name="bread_classic_api_key" class="form-control" value="<% = dct_setup("bread_classic_api_key") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_classic_api_secret" class="col-md-2 control-label">Bread Classic API Secret</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_api_secret" name="bread_classic_api_secret" class="form-control" value="<% = dct_setup("bread_classic_api_secret") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_classic_auth" class="col-md-2 control-label">Bread Classic Authorization</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_auth" name="bread_classic_auth" class="form-control" value="<% = dct_setup("bread_classic_auth") %>">
+			</div>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="bread_auth" class="col-md-2 control-label">Bread Authorization</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_auth" name="bread_auth" class="form-control" value="<% = dct_setup("bread_auth") %>">
-		</div>
-	</div>
+	<h4>Bread Payment Settings</h4>
 	<div class="form-group">
 		<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method Id</label>
 		<div class="col-md-6">

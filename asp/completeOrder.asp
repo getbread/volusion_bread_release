@@ -8,7 +8,7 @@
 
 Dim jsonHelper : Set jsonHelper = New VbsJson
 Dim tx_id : tx_id = Request.Form("tx_id")
-Dim bread : Set bread = (New BreadApi)( dct_settings("bread_api_key"), dct_settings("bread_api_secret") )
+Dim bread : Set bread = (New BreadApi)( dct_settings("bread_classic_api_key"), dct_settings("bread_classic_api_secret") )
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
 Dim response_json
 

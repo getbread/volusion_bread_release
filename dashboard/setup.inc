@@ -68,10 +68,10 @@ Sub Save_Settings()
 	file_setup.WriteLine("merchantemail|" & Request.Form("merchantemail"))
 
 	' Bread Settings
-	file_setup.WriteLine("bread_api_key|" & Request.Form("bread_api_key"))
-	file_setup.WriteLine("bread_api_secret|" & Request.Form("bread_api_secret"))
+	file_setup.WriteLine("bread_classic_api_key|" & Request.Form("bread_classic_api_key"))
+	file_setup.WriteLine("bread_classic_api_secret|" & Request.Form("bread_classic_api_secret"))
 	file_setup.WriteLine("bread_env|" & Request.Form("bread_env"))
-	file_setup.WriteLine("bread_auth|" & Request.Form("bread_auth"))
+	file_setup.WriteLine("bread_classic_auth|" & Request.Form("bread_classic_auth"))
 	file_setup.WriteLine("bread_payment_method_id|" & Request.Form("bread_payment_method_id"))
 	file_setup.WriteLine("bread_payment_settle|" & Request.Form("bread_payment_settle"))
 	file_setup.WriteLine("bread_disable_product_checkout|" & Request.Form("bread_disable_product_checkout"))

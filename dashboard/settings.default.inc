@@ -6,9 +6,9 @@ apipassword|
 merchantfrom|
 merchantemail|
 bread_env|sandbox
-bread_api_key|
-bread_api_secret|
-bread_auth|
+bread_classic_api_key|
+bread_classic_api_secret|
+bread_classic_auth|
 bread_payment_method_id|
 bread_payment_settle|
 bread_disable_product_checkout|
