@@ -1,13 +1,13 @@
 <%
 
-' Bread API Wrapper Class
+' Bread Classic API Wrapper Class
 '
 ' @see: https://payments.breadfinancial.com/documentation/
 ' @example:
 '
-' 	Dim bread : Set bread = (New BreadApi)( "email@domain.com", "accessToken" )
+' 	Dim bread : Set bread = (New BreadClassicApi)( "email@domain.com", "accessToken" )
 '
-Class BreadAPI
+Class BreadClassicAPI
 
 	Private api_baseurl
 	Private api_key
@@ -33,7 +33,7 @@ Class BreadAPI
 	' @param	string			secret		The api secret key
 	'
 	' @example:
-	' Dim bread : Set bread = (New BreadApi)( "xyz123kdkdjf", "djfkalfd3983" )
+	' Dim bread : Set bread = (New BreadClassicApi)( "xyz123kdkdjf", "djfkalfd3983" )
 	Public Default Function construct( key, secret )
 	
 		api_key = key

@@ -46,6 +46,34 @@
 			</select>
 		</div>
 	</div>
+	<div class="form-group">
+		<label for="bread_tenant" class="col-md-2 control-label">Bread Tenant</label>
+		<div class="col-md-6">
+			<select id="bread_tenant" name="bread_tenant" class="form-control">
+				<% If dct_setup("bread_tenant") = "RBC" Then %>
+				<option value="ADS">ADS</option>
+				<option value="RBC" selected>RBC</option>
+				<% Else %>
+				<option value="ADS" selected>ADS</option>
+				<option value="RBC">RBC</option>
+				<% End If %>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="bread_version" class="col-md-2 control-label">Bread Version</label>
+		<div class="col-md-6">
+			<select id="bread_version" name="bread_version" class="form-control">
+				<% If dct_setup("bread_version") = "classic" Then %>
+				<option value="platform">platform</option>
+				<option value="classic" selected>classic</option>
+				<% Else %>
+				<option value="platform" selected>platform</option>
+				<option value="classic">classic</option>
+				<% End If %>
+			</select>
+		</div>
+	</div>
 	<div class="platform-api-info">
 		<h4>Bread 2.0</h4>
 		<div class="form-group">
@@ -64,6 +92,12 @@
 			<label for="bread_platform_integration_key" class="col-md-2 control-label">Bread 2.0 Integration Key</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_integration_key" name="bread_platform_integration_key" class="form-control" value="<% = dct_setup("bread_platform_integration_key") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_platform_auth" class="col-md-2 control-label">Bread 2.0 Authorization</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_platform_auth" name="bread_platform_auth" class="form-control" value="<% = dct_setup("bread_platform_auth") %>">
 			</div>
 		</div>
 	</div>

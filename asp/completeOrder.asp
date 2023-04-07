@@ -1,14 +1,23 @@
 <!--#include file="load_settings.inc"-->
 <!--#include file="./classes/jsonHelper.asp"-->
-<!--#include file="./classes/breadApi.asp"-->
+<!--#include file="./classes/breadClassicApi.asp"-->
+<!--#include file="./classes/breadPlatformApi.asp"-->
 <!--#include file="./classes/volusionApi.asp"-->
 <!--#include file="./classes/SMTP.asp"-->
 
 <%
 
+' send the buyer info in through the javascript, see if you can get that working. Actually I think that's a bad idea. Could break the request. And the data is coming in in the request. It's just being lost in the file tranfser. I think it has something to do with the ASP encoder
+
 Dim jsonHelper : Set jsonHelper = New VbsJson
 Dim tx_id : tx_id = Request.Form("tx_id")
-Dim bread : Set bread = (New BreadApi)( dct_settings("bread_classic_api_key"), dct_settings("bread_classic_api_secret") )
+Dim amount : amount = Request.Form("amount")
+Dim billingAddress : billingAddress = Request.Form("billingAddress")
+Dim shippingAddress : shippingAddress = Request.Form("shippingAddress")
+Dim contactInfo : contactInfo = Request.Form("contactInfo")
+Dim purchaseItems : purchaseItems = Request.Form("items")
+Dim bread : Set bread = (New BreadClassicApi)( dct_settings("bread_classic_api_key"), dct_settings("bread_classic_api_secret") )
+Dim breadPlatform : Set breadPlatform = (New BreadPlatformApi)( dct_settings("bread_platform_api_key"), dct_settings("bread_platform_api_secret") )
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
 Dim response_json
 
@@ -17,17 +26,23 @@ If tx_id = "" Then
 	Response.End
 End If
 
-Set authorization = bread.authorizeTransaction( tx_id )
-Set transaction = bread.getTransaction( tx_id )
+Set authorization = breadPlatform.authorizeTransaction( tx_id, amount )
+Set transaction = breadPlatform.getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems )
 
 If Not transaction("error") Then
 
+			Set bread_fso = Server.CreateObject("Scripting.FileSystemObject")
+			Set bread_log = bread_fso.OpenTextFile(Server.MapPath("/v/bread/asp/log-bread-order.inc"), 8, True)
+			bread_log.WriteLine( "-------------------------------" )
+			bread_log.WriteLine("transaction: " & jsonHelper.Encode( transaction ))
+			' bread_log.Close
+
 	If transaction("status") = "AUTHORIZED" Then
 		
-		Set customer = volusion.getCustomerByEmail( transaction("billingContact")("email") )		
+		Set customer = volusion.getCustomerByEmail( transaction("contactInfo")("email") )	
 		Set customer_id = customer.SelectSingleNode("//Customers/CustomerID")
-		
-		names = Split(transaction("billingContact")("fullName"), " ", 2)
+
+		names = Split(transaction("contactInfo")("fullName"), " ", 2)
 		Dim first_name : first_name = ""
 		Dim last_name : last_name = ""
 
@@ -44,15 +59,17 @@ If Not transaction("error") Then
 			
 			Set new_customer = Server.CreateObject("Scripting.Dictionary")
 			
-			new_customer.Add "EmailAddress", transaction("billingContact")("email")
-			new_customer.Add "BillingAddress1", transaction("billingContact")("address")
+			new_customer.Add "EmailAddress", transaction("contactInfo")("email")
+			new_customer.Add "BillingAddress1", transaction("billingContact")("address1")
 			new_customer.Add "BillingAddress2", transaction("billingContact")("address2")
-			new_customer.Add "FirstName", first_name
-			new_customer.Add "LastName", last_name
-			new_customer.Add "City", transaction("billingContact")("city")
-			new_customer.Add "State", transaction("billingContact")("state")
-			new_customer.Add "PostalCode", transaction("billingContact")("zip")
-			new_customer.Add "PhoneNumber", transaction("billingContact")("phone")
+			new_customer.Add "FirstName", transaction("contactInfo")("firstName")
+			new_customer.Add "LastName", transaction("contactInfo")("lastName")
+			new_customer.Add "City", transaction("billingContact")("locality")
+			new_customer.Add "State", transaction("billingContact")("region")
+			new_customer.Add "PostalCode", transaction("billingContact")("postalCode")
+			new_customer.Add "PhoneNumber", transaction("contactInfo")("phone")
+			new_customer.Add "RestrictedFreeShipping", "T" 'TODO: This field is required and can only be a single letter string, but it doesn't show up on customer profiles and I can't see how it effects anything.
+
 			
 			Set customer = volusion.insert( "Customers", Array( new_customer ) )
 			Set customer_id = customer.SelectSingleNode("//Customers/CustomerID")
@@ -65,29 +82,29 @@ If Not transaction("error") Then
 			Set new_order = Server.CreateObject("Scripting.Dictionary")
 			
 			new_order.Add "CustomerID", customer_id.text
-			new_order.Add "Custom_Field_Custom5", transaction("breadTransactionId")
-			new_order.Add "BillingAddress1", transaction("billingContact")("address")
+			new_order.Add "Custom_Field_Custom5", transaction("id")
+			new_order.Add "BillingAddress1", transaction("billingContact")("address1")
 			new_order.Add "BillingAddress2", transaction("billingContact")("address2")
 			new_order.Add "BillingFirstName", first_name
 			new_order.Add "BillingLastName", last_name
-			new_order.Add "BillingCity", transaction("billingContact")("city")
-			new_order.Add "BillingState", transaction("billingContact")("state")
-			new_order.Add "BillingPostalCode", transaction("billingContact")("zip")
-			new_order.Add "BillingPhoneNumber", transaction("billingContact")("phone")
+			new_order.Add "BillingCity", transaction("billingContact")("locality")
+			new_order.Add "BillingState", transaction("billingContact")("region")
+			new_order.Add "BillingPostalCode", transaction("billingContact")("postalCode")
+			new_order.Add "BillingPhoneNumber", transaction("contactInfo")("phone")
 			new_order.Add "PaymentMethodID", dct_settings("bread_payment_method_id")
-			new_order.Add "SalesTax1", Round( transaction("totalTax") / 100, 2 )
-			new_order.Add "PaymentAmount", Round( transaction("adjustedTotal") / 100, 2 )
-			new_order.Add "Total_Payment_Authorized", Round( transaction("adjustedTotal") / 100, 2 )
-			new_order.Add "ShipAddress1", transaction("shippingContact")("address")
+			new_order.Add "SalesTax1", Round( transaction("taxAmount")("value") / 100, 2 )
+			new_order.Add "PaymentAmount", Round( transaction("adjustedAmount")("value") / 100, 2 )
+			new_order.Add "Total_Payment_Authorized", Round( transaction("totalAmount")("value") / 100, 2 )
+			new_order.Add "ShipAddress1", transaction("shippingContact")("address1")
 			new_order.Add "ShipAddress2", transaction("shippingContact")("address2")
 			new_order.Add "ShipFirstName", first_name
 			new_order.Add "ShipLastName", last_name
-			new_order.Add "ShipCity", transaction("shippingContact")("city")
-			new_order.Add "ShipState", transaction("shippingContact")("state")
-			new_order.Add "ShipPostalCode", transaction("shippingContact")("zip")
-			new_order.Add "ShipPhoneNumber", transaction("shippingContact")("phone")
-			new_order.Add "ShippingMethodID", transaction("shippingMethodCode")
-			new_order.Add "TotalShippingCost", Round( transaction("shippingCost") / 100, 2 )
+			new_order.Add "ShipCity", transaction("shippingContact")("locality")
+			new_order.Add "ShipState", transaction("shippingContact")("region")
+			new_order.Add "ShipPostalCode", transaction("shippingContact")("postalCode")
+			new_order.Add "ShipPhoneNumber", transaction("contactInfo")("phone")
+			new_order.Add "ShippingMethodID", transaction("shippingID")
+			new_order.Add "TotalShippingCost", Round( transaction("shippingAmount")("value") / 100, 2 )
 			new_order.Add "IsGTSOrder", "False"
 			new_order.Add "OrderStatus", dct_settings("completed_order_status")
 			new_order.Add "Locked", "Y"
@@ -96,7 +113,7 @@ If Not transaction("error") Then
 			Dim line_items
 			Dim order_details()
 			ReDim order_details(-1)
-			
+
 			'' Default to processing line items from bread transaction
 			line_items = transaction("lineItems")
 			
@@ -110,7 +127,7 @@ If Not transaction("error") Then
 			
 			'' Add the line items
 			For Each line In line_items
-			
+
 				If line("sku") = "SURCHARGE" Then
 				
 					Set order_line = Server.CreateObject("Scripting.Dictionary")
@@ -150,19 +167,21 @@ If Not transaction("error") Then
 			Next
 			
 			'' Add any discounts
-			For Each line In transaction("discounts")
-			
-				Set order_line = Server.CreateObject("Scripting.Dictionary")
+			If transaction("discounts") Then
+				For Each line In transaction("discounts")
 				
-				order_line.Add "ProductCode", "Discount"
-				order_line.Add "ProductName", line("description")
-				order_line.Add "ProductPrice", Round( line("amount") / 100, 2 ) * -1
-				order_line.Add "Quantity", 1
+					Set order_line = Server.CreateObject("Scripting.Dictionary")
+					
+					order_line.Add "ProductCode", "Discount"
+					order_line.Add "ProductName", line("description")
+					order_line.Add "ProductPrice", Round( line("amount") / 100, 2 ) * -1
+					order_line.Add "Quantity", 1
+					
+					ReDim Preserve order_details( UBound( order_details ) + 1 )
+					Set order_details( UBound( order_details ) ) = order_line
 				
-				ReDim Preserve order_details( UBound( order_details ) + 1 )
-				Set order_details( UBound( order_details ) ) = order_line
-			
-			Next
+				Next
+			End If
 			
 			new_order.Add "OrderDetails", order_details
 
@@ -179,25 +198,28 @@ If Not transaction("error") Then
 				Set processed_response = Server.CreateObject("Scripting.Dictionary")
 				
 				processed_response.Add "order", new_order
-				
-				'' Once order has been created, settle the transaction
+
 				If dct_settings("bread_payment_settle") = "on" Then
-					bread.settleTransaction( tx_id )
+					breadPlatform.settleTransaction( tx_id )
 					processed_response.Add "transaction", "settled"
 				Else
 					processed_response.Add "transaction", "unsettled"
 				End If
+
+				' The elements being updated in the commented out lines below don't seem to exist in 2.0
+				' order_id comes out as having type "Nothing" so order_id.text does not exist
 				
 				'' Update the bread api with the order id
-				Set payload = Server.CreateObject("Scripting.Dictionary")
-				payload.Add "merchantOrderId", order_id.text
-				bread.updateTransaction tx_id, payload
-				
+				' Set payload = Server.CreateObject("Scripting.Dictionary")
+				' payload.Add "merchantOrderId", order_id.text
+
+				' breadPlatform.updateTransaction tx_id, payload
+
 				processed_response.Add "success", True
-				processed_response.Add "order_id", order_id.text
+				processed_response.Add "order_id", tx_id 'this was order_id.text also, but i swapped it out so it would work
 				
 				'' SUCCESS !
-				
+
 				Set emailer = new SMTP
 				Set emailTokens = Server.CreateObject("Scripting.Dictionary")
 				
@@ -211,7 +233,7 @@ If Not transaction("error") Then
 				emailTokens.Add "StoreName", dct_settings("storename")
 				emailTokens.Add "HomeURL", "http://" & Request.ServerVariables("SERVER_NAME")
 				emailTokens.Add "CustomerID", new_order("CustomerID")
-				emailTokens.Add "OrderNo", order_id.text
+				emailTokens.Add "OrderNo", tx_id 'this was order_id.text also, but i swapped it out so it would work
 				emailTokens.Add "OrderDate", Year(Now()) & "-" & Month(Now()) & "-" & Day(Now())
 				emailTokens.Add "OrderTime", Hour(Now()) & ":" & Minute(Now()) & ":" & Second(Now())
 				emailTokens.Add "Bill_CompanyName", ""
@@ -224,7 +246,7 @@ If Not transaction("error") Then
 				emailTokens.Add "Bill_PostalCode", new_order("BillingPostalCode")
 				emailTokens.Add "Bill_Country", ""
 				emailTokens.Add "Bill_PhoneNumber", new_order("BillingPhoneNumber")
-				emailTokens.Add "EmailAddress", transaction("billingContact")("email")
+				emailTokens.Add "EmailAddress", transaction("contactInfo")("email")
 				emailTokens.Add "Ship_CompanyName", ""
 				emailTokens.Add "Ship_FirstName", new_order("ShipFirstName")
 				emailTokens.Add "Ship_LastName", new_order("ShipLastName")
@@ -236,7 +258,7 @@ If Not transaction("error") Then
 				emailTokens.Add "Ship_Country", ""
 				emailTokens.Add "Ship_PhoneNumber", new_order("ShipPhoneNumber")
 				emailTokens.Add "DisplayPaymentMethod", "Bread Financing"
-				emailTokens.Add "ShippingMethod", transaction("shippingMethodName")
+				emailTokens.Add "ShippingMethod", transaction("shippingID")
 				emailTokens.Add "OrderDetails", "<table width='100%'>" &_ 
 					"<tr>" &_ 
 						"<td><strong>Sku</strong></td>" &_ 
@@ -263,13 +285,13 @@ If Not transaction("error") Then
 				emailer.smtpEmail    = "apikey"
 				emailer.smtpPassword = "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"
 				
-				emailer.EmailSubject = "Your order (#" & order_id.text & ") from " & dct_settings("storename")
+				emailer.EmailSubject = "Your order (#" & tx_id & ") from " & dct_settings("storename") 'this was order_id.text also, but i swapped it out so it would work
 				emailer.EmailFrom    = dct_settings("merchantfrom")
 				emailer.EmailTo      = transaction("billingContact")("email")
 				emailer.LoadTemplate "OrderConfirmation_To_Customer", emailTokens
 				emailer.Send()
 				
-				emailer.EmailSubject = "New order (#" & order_id.text & ") at " & dct_settings("storename")
+				emailer.EmailSubject = "New order (#" & tx_id & ") at " & dct_settings("storename") 'this was order_id.text also, but i swapped it out so it would work
 				emailer.EmailTo      = dct_settings("merchantemail")
 				emailer.Send()
 				

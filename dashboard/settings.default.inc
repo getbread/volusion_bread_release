@@ -6,9 +6,12 @@ apipassword|
 merchantfrom|
 merchantemail|
 bread_env|sandbox
+bread_tenant|ADS
+bread_version|platform
 bread_platform_api_key|
 bread_platform_api_secret|
 bread_platform_integration_key|
+bread_platform_auth|
 bread_classic_api_key|
 bread_classic_api_secret|
 bread_classic_auth|
