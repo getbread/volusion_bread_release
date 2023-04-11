@@ -16,6 +16,8 @@ output.Add "customCSS", dct_settings("bread_button_css")
 output.Add "disable_autoload", dct_settings("disable_autoload")
 output.Add "disable_product_checkout", dct_settings("bread_disable_product_checkout")
 output.Add "disable_cart_checkout", dct_settings("bread_disable_cart_checkout")
+output.Add "disable_product_button", dct_settings("bread_disable_product_button")
+output.Add "disable_cart_button", dct_settings("bread_disable_cart_button")
 
 Response.Write jsonHelper.Encode( output )
 %>

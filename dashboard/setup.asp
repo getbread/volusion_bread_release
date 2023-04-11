@@ -31,7 +31,7 @@
 			</label>
 		</div>
 	</div>
-	<h3>Bread Finance Integration</h3>
+	<h3>Bread Financial Integration</h3>
 	<div class="form-group">
 		<label for="bread_env" class="col-md-2 control-label">Environment</label>
 		<div class="col-md-6">
@@ -98,6 +98,24 @@
 			<label for="bread_platform_auth" class="col-md-2 control-label">Bread 2.0 Authorization</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_auth" name="bread_platform_auth" class="form-control" value="<% = dct_setup("bread_platform_auth") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label">Disable Product Page Button</label>
+			<div class="col-md-6 checkbox">
+				<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+					<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
+					If this box is checked, the Bread button will not appear on individual product description pages
+				</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label">Disable Cart Page Button</label>
+			<div class="col-md-6 checkbox">
+				<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+					<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
+					If this box is checked, the Bread button will not appear on the cart page
+				</label>
 			</div>
 		</div>
 	</div>

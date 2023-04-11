@@ -19,6 +19,8 @@ bread_payment_method_id|
 bread_payment_settle|
 bread_disable_product_checkout|
 bread_disable_cart_checkout|
+bread_disable_product_button|
+bread_disable_cart_button|
 debug_mode|
 disable_autoload|
 ajax_line_items_mode|

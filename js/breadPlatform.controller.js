@@ -109,7 +109,7 @@
              * </select>
              * 
              * These select elements are inside table elements, so the code below finds the appropriate td (cell) or tr (row) element and reformats in order to send along the data, 
-             * */ 
+             * */
 
             if (page && html.find('td b').eq(0).text() == 'Item Details') {
                 // Scrape product options from the Item Details popup
@@ -673,6 +673,521 @@
 
     });
 
+
+    /**
+     * [Model] Category Page Controller
+     */
+    var CategoryPageController = _class(BasePageController,
+        {
+            /**
+             * @var	string 		Button HTML
+             */
+            buttonHtml: '<div data-role="bread-checkout" class="bread-checkout-btn"></div>',
+
+            /**
+             * Make bread buttons
+             *
+             * @return	void
+             */
+            makeBread: function (integrationKey) {
+                var self = this;
+
+                /** 
+                 * Bread uses [placements] to fill in information about the product and apply it to the pre-qualification button.
+                 * In order to get that information, we get the list of divs from the page that match the ID "v-product", 
+                 * and use that list to run getCheckoutParams, which returns information about the products.
+                 * The actual product info is stored in a parameter called "items". We loop over each product to get its "items" data.
+                 * The item data is added to productArray, which we can then access to get price and other necessary info.
+                 * We then add that info to the placement, which is pushed to bread via registerPlacements() to generate buttons with applicable prices.
+                 */
+
+                var products = $('.v-product');
+                const placements = [];
+
+                // Add the bread button to each product on the page
+                products.each(function (i) {
+                    var product = $(this);
+                    var button = $(self.buttonHtml);
+                    var buttonId = 'bread-checkout-btn-' + i;
+
+                    let item = self.getCheckoutParams(product, buttonId)
+                    let productArray = item.items
+                    let price = productArray[0].price
+
+                    button.attr('id', buttonId);
+                    product.append(button);
+
+                    placements.push({
+                        financingType: "installment",
+                        domID: buttonId,
+                        allowCheckout: false,
+                        order: {
+                            items: [],
+                            subTotal: {
+                                value: price,
+                                currency: "USD",
+                            },
+                            totalDiscounts: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalShipping: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalTax: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalPrice: {
+                                value: price,
+                                currency: "USD",
+                            },
+                        }
+                    })
+
+                });
+
+                window.BreadPayments.setup({
+                    integrationKey: integrationKey
+                });
+
+                window.BreadPayments.registerPlacements(placements);
+
+                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+
+                window.BreadPayments.__internal__.init();
+            },
+
+            /**
+             * Get the bread checkout parameters
+             *
+             * @param	jQuery		product			The jquery wrapped product
+             * @param	string		buttonId		The button id
+             * @return	object
+             */
+            getCheckoutParams: function (product, buttonId) {
+                var self = this;
+
+                // product details
+                var items = [{
+                    name: product.find('.v-product__title').text().trim(),
+                    price: parseInt(parseFloat(product.find('.product_productprice').text().trim().split(this.c_prefix)[1].replace(',', '')) * 100),
+                    sku: getProductCodeFromUrl(product.find('a[href*="ProductCode"]').attr('href')),
+                    imageUrl: product.find('.v-product__img img').data('image-path'),
+                    detailUrl: product.find('a.v-product__title').attr('href'),
+                    quantity: 1
+                }];
+
+                // checkout options
+                var opts = {
+                    buttonId: buttonId,
+                    items: items,
+                    calculateTax: function (shippingContact, callback) {
+                        $.when(self.getCheckoutTotals(items, shippingContact, true)).done(function (result) {
+                            callback(null, result.tax);
+                        });
+                    },
+                    calculateShipping: function (shippingContact, callback) {
+                        $.when(self.getCheckoutTotals(items, shippingContact, true)).done(function (result) {
+                            callback(null, result.shipping);
+                        });
+                    }
+                };
+
+                return $.extend(this.parent.getCheckoutParams.apply(this), opts);
+            }
+        });
+
+    /**
+     * [Model] Product Page Controller
+     */
+    var ProductPageController = _class(BasePageController,
+        {
+            /**
+             * Init 
+             *
+             */
+            init: function () {
+                this.allowCheckout = sessionStorage.getItem('bread-disable-product-checkout') != 'on';
+            },
+
+            /**
+             * @var	string 		Button HTML
+             */
+            buttonHtml: '<tr><td><div id="bread-checkout-btn" class="bread-checkout-btn" style="margin: 5px auto;"></div></td></tr>',
+
+            /**
+             * Make bread buttons
+             *
+             * @return	void
+             */
+            makeBread: function (integrationKey) {
+                var self = this;
+
+                // Inserts the bread button underneath the Product
+                var button = $(this.buttonHtml);
+                this.insertButton(button);
+
+                /** 
+                 * Bread uses [placements] to fill in information about the product and apply it to the pre-qualification button.
+                 * In order to get that information, we run getCheckoutParams, which returns information about that product.
+                 * The actual product info is stored in a parameter called "items" (even though there's only one).
+                 * The item info is added to productArray, which we can then access to get price and other necessary info.
+                 * We then add that info to the placement, which is pushed to bread via registerPlacements() to generate buttons with applicable prices.
+                 */
+
+                const placements = [];
+                let item = self.getCheckoutParams()
+                let productArray = item.items
+                let price = productArray[0].price
+
+                placements.push({
+                    financingType: "installment",
+                    domID: "bread-checkout-btn",
+                    allowCheckout: false,
+                    order: {
+                        items: [],
+                        subTotal: {
+                            value: price,
+                            currency: "USD",
+                        },
+                        totalDiscounts: {
+                            value: 0,
+                            currency: "USD",
+                        },
+                        totalShipping: {
+                            value: 0,
+                            currency: "USD",
+                        },
+                        totalTax: {
+                            value: 0,
+                            currency: "USD",
+                        },
+                        totalPrice: {
+                            value: price,
+                            currency: "USD",
+                        },
+                    }
+                });
+
+                window.BreadPayments.setup({
+                    integrationKey: integrationKey
+                });
+
+                window.BreadPayments.registerPlacements(placements);
+
+                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+
+                window.BreadPayments.__internal__.init();
+            },
+
+            /**
+             * Insert the button into the page
+             *
+             * @param	jquery		button			The jquery wrapped button element
+             * @return	void
+             */
+            insertButton: function (button) {
+                var table = $('[class$=productdetail-options]').find('table').eq(0);
+                button.insertAfter(table.find('tr').eq(0));
+            },
+
+            /**
+             * Get the bread checkout parameters
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	object
+             */
+            getCheckoutParams: function (html) {
+                var self = this;
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+
+                // product details
+                var items = [{
+                    name: this.getProductName(html),
+                    price: this.getProductPrice(html),
+                    sku: this.getProductSku(html),
+                    imageUrl: this.getProductImage(html),
+                    quantity: this.getProductQuantity(html),
+                    detailUrl: location.href,
+                    options: self.page.getOptionsFromPage(html)
+                }];
+
+                // checkout options
+                var opts = {
+                    buttonId: 'bread-checkout-btn',
+                    items: items,
+                    calculateTax: function (shippingContact, callback) {
+                        $.when(self.getCheckoutTotals(items, shippingContact, true)).done(function (result) {
+                            callback(null, result.tax);
+                        });
+                    },
+                    calculateShipping: function (shippingContact, callback) {
+                        $.when(self.getCheckoutTotals(items, shippingContact, true)).done(function (result) {
+                            callback(null, result.shipping);
+                        });
+                    }
+                };
+
+                return $.extend(this.parent.getCheckoutParams.apply(this), opts);
+            },
+
+            /**
+             * Get the product name
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	string
+             */
+            getProductName: function (html) {
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+                return product.find('[itemprop=name]').text().trim();
+            },
+
+            /**
+             * Get the product price
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	int
+             */
+            getProductPrice: function (html) {
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+                return parseInt(parseFloat(product.find('[itemprop=price]').attr('content')) * 100);
+            },
+
+            /**
+             * Get the product sku
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	string
+             */
+            getProductSku: function (html) {
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+                return product.find('.product_code').text() || window.global_Current_ProductCode;
+            },
+
+            /**
+             * Get the product image url
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	string
+             */
+            getProductImage: function (html) {
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+                return product.find('#product_photo').data('image-path') || product.find('#product_photo').attr('src');
+            },
+
+            /**
+             * Get the product quantity
+             *
+             * @param	string|jQuery|undefined		html		Page to get checkout params from			
+             * @return	int
+             */
+            getProductQuantity: function (html) {
+                var page = html ? $(html) : $(document);
+                var product = page.find('table[id$="product-parent"]');
+                return parseInt(product.find('input[class$="cartqty"]').val() || 1);
+            }
+
+        });
+
+    /**
+     * [Model] Cart Page Controller
+     */
+    var CartPageController = _class(BasePageController,
+        {
+            /**
+             * @var	string 		Button HTML
+             */
+            buttonHtml: '<tr><td colspan="2"><div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px;"></div></td></tr>',
+
+            /**
+             * @var	boolean		Clear cart after checkout
+             */
+            clearCart: true,
+
+            /**
+             * Init 
+             *
+             */
+            init: function () {
+                this.allowCheckout = sessionStorage.getItem('bread-disable-cart-checkout') != 'on';
+            },
+
+            /**
+             * Make bread buttons
+             *
+             * @return	void
+             */
+            makeBread: function (integrationKey) {
+                var button = $(this.buttonHtml);
+                this.insertButton(button);
+
+
+                const placements = [];
+
+                $.when(this.getCheckoutParams()).done(function (params) {
+
+                    let productArray = params.items
+                    let price = productArray[0].price
+
+                    placements.push({
+                        financingType: "installment",
+                        domID: "bread-checkout-btn",
+                        allowCheckout: false,
+                        order: {
+                            items: [],
+                            subTotal: {
+                                value: price,
+                                currency: "USD",
+                            },
+                            totalDiscounts: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalShipping: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalTax: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalPrice: {
+                                value: price,
+                                currency: "USD",
+                            },
+                        }
+                    });
+
+                    window.BreadPayments.setup({
+                        integrationKey: integrationKey
+                    });
+
+                    window.BreadPayments.registerPlacements(placements);
+
+                    window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                    window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                    window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+
+                    window.BreadPayments.__internal__.init();
+
+                });
+            },
+
+            /**
+             * Insert the button into the page
+             *
+             * @param	jquery		button			The jquery wrapped button element
+             * @return	void
+             */
+            insertButton: function (button) {
+                var table = $('table[id$="cart-checkout-parent"]');
+                button.insertAfter(table.find('tr').eq(0));
+            },
+
+            /**
+             * Get the bread checkout parameters
+             *
+             * @return	$.Deferred
+             */
+            getCheckoutParams: function () {
+                var self = this;
+                var items = [];
+                var cart_discounts = [];
+                var cart_surcharges = [];
+                var products = $('.v65-cart-details-row');
+                var discounts = $('[class$="cart-giftcert-details-row"]');
+                var detailsRequests = [];
+                var checkoutParams = $.Deferred();
+                var cartID = 0;
+
+                if (window.BREAD_USE_AJAX_CART) {
+                    // fetch products details
+                    detailsRequests.push(this.getCartItems().done(function (_items) {
+                        items.push.apply(items, _items);
+                    }));
+                }
+                else {
+                    // scrape products details
+                    products.each(function () {
+                        var product = $(this);
+                        cartID += 1;
+                        if (product.find('.cart-item-name').length) {
+                            cartID = product.find('.cart-item-name').attr('href').match(/CartID=(\d+)/)[1] || cartID;
+                            detailsRequests.push($.get('/Help_CartItemDetails.asp?CartID=' + cartID, function (itemDetailsPage) {
+                                items.push({
+                                    name: product.find('a.cart-item-name').text().trim(),
+                                    price: parseInt(parseFloat(product.children('td').filter(function () { return $(this).text().trim().indexOf(self.c_prefix) === 0; }).eq(0).text().trim().split(self.c_prefix)[1].replace(',', '')) * 100),
+                                    sku: getProductCodeFromUrl(product.find('a[href*="ProductCode"]').attr('href')),
+                                    imageUrl: product.find('[class$="cart-detail-productimage"] img').data('image-path') || product.find('[class$="cart-detail-productimage"] img').attr('src'),
+                                    detailUrl: location.protocol + '//' + location.hostname + '/' + product.find('a.cart-item-name').attr('href'),
+                                    quantity: parseInt(product.find('input[name^="Quantity"]').val()),
+                                    options: self.page.getOptionsFromPage(itemDetailsPage)
+                                });
+                            }));
+                        }
+                    });
+                }
+
+                discounts.each(function () {
+                    var discount = $(this);
+                    var discountAmount = parseInt(parseFloat(discount.find('.carttext').eq(1).text().trim().replace(self.c_prefix, '').replace(',', '')) * 100);
+                    var description = discount.find('.carttext').eq(0).text().trim();
+                    if (discountAmount < 0) {
+                        cart_discounts.push({
+                            description: description,
+                            amount: Math.abs(discountAmount)
+                        });
+                    } else if (discountAmount > 0) {
+                        cart_surcharges.push({
+                            name: description,
+                            price: discountAmount,
+                            sku: 'SURCHARGE',
+                            detailUrl: location.protocol + '//' + location.hostname,
+                            quantity: 1
+                        });
+                    }
+                });
+
+                $.when.apply($, detailsRequests).done(function () {
+                    items.push.apply(items, cart_surcharges);
+
+                    // checkout options
+                    var opts = {
+                        buttonId: 'bread-checkout-btn',
+                        items: self.flattenItems(items),
+                        discounts: cart_discounts,
+                        calculateTax: function (shippingContact, callback) {
+                            $.when(self.getCheckoutTotals(items, shippingContact)).done(function (result) {
+                                callback(null, result.tax);
+                            });
+                        },
+                        calculateShipping: function (shippingContact, callback) {
+                            $.when(self.getCheckoutTotals(items, shippingContact)).done(function (result) {
+                                callback(null, result.shipping);
+                            });
+                        }
+                    };
+
+                    checkoutParams.resolve($.extend(self.parent.getCheckoutParams.apply(self), opts));
+                });
+
+                return checkoutParams;
+            }
+        });
+
+
+
     /**
      * [Model] Checkout Page Controller
      */
@@ -705,7 +1220,7 @@
                     let shippingChoiceArray = shippingChoiceRaw.split("").reverse();
                     let shippingPriceArray = [];
 
-                    for (let i = 0; i<shippingChoiceArray.length; i++) {
+                    for (let i = 0; i < shippingChoiceArray.length; i++) {
                         if (shippingChoiceArray[i] !== "$") {
                             shippingPriceArray.push(shippingChoiceArray[i])
                             shippingChoiceArray.shift();
@@ -720,12 +1235,12 @@
                     shippingPriceArray = shippingPriceArray.reverse();
                     const shippingPriceString = shippingPriceArray.join("");
                     console.log(shippingPriceString);
-                    const totalShipping = Number(shippingPriceString.replace(/[^0-9.-]+/g, ""))*100;
+                    const totalShipping = Number(shippingPriceString.replace(/[^0-9.-]+/g, "")) * 100;
 
                     shippingChoiceArray = shippingChoiceArray.reverse()
                     const shippingName = shippingChoiceArray.join("")
 
-                    return {shippingID: shippingID, shippingDescription: shippingName, shippingCost: totalShipping}
+                    return { shippingID: shippingID, shippingDescription: shippingName, shippingCost: totalShipping }
 
                 }
 
@@ -754,7 +1269,7 @@
 
                         // const totalTax = params.taxAndShipping.tax
                         const totalTaxString = $("#TotalsTax1TD").text();
-                        const totalTax = Number(totalTaxString.replace(/[^0-9.-]+/g, ""))*100;
+                        const totalTax = Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100;
 
                         let subTotal = 0;
                         params.items.forEach(item => {
@@ -814,11 +1329,11 @@
 
                             // asp can't parse JSON natively, so we have to transform these objects into strings
                             // the use jsonHelper to convert and manipulate them in the asp files.
-                            
-                            var data = { 
+
+                            var data = {
                                 tx_id: response.transactionID,
                                 shippingID: shippingChoice.shippingID,
-                                amount: JSON.stringify({currency: "USD", value: response.order.totalPrice.value}),
+                                amount: JSON.stringify({ currency: "USD", value: response.order.totalPrice.value }),
                                 billingAddress: JSON.stringify(params.billingAddress),
                                 shippingAddress: JSON.stringify(params.shippingAddress),
                                 contactInfo: JSON.stringify(contactInfo)
@@ -836,11 +1351,11 @@
                             // Send along the order items to process. The bread backend doesnt maintain
                             // the correct order of transaction line items, so we may need this.
                             data.items = params.items.map(function (item) {
-                                    var line = Object.assign({}, item);
-                                    line.product = { name: line.name };
-                                    delete line.name;
-                                    return line;
-                                });
+                                var line = Object.assign({}, item);
+                                line.product = { name: line.name };
+                                delete line.name;
+                                return line;
+                            });
 
                             data.items = JSON.stringify(data.items)
 
@@ -857,7 +1372,7 @@
                                         self.setCookie(self.cart_cookie, '');
                                         console.log("successcookie")
                                     }
-                                    self.orderComplete( response, params );
+                                    self.orderComplete(response, params);
                                 } else {
                                     alert(response.message);
                                 }
@@ -1061,9 +1576,9 @@
      */
     window.breadControllers = {
         base: BasePageController,
-        // category: CategoryPageController,
-        // product: ProductPageController,
-        // cart: CartPageController,
+        category: CategoryPageController,
+        product: ProductPageController,
+        cart: CartPageController,
         checkout: CheckoutPageController,
         finished: FinishedPageController
     };
@@ -1076,7 +1591,6 @@
         let api_key = sessionStorage.getItem('bread-api-key');
         const breadTenant = sessionStorage.getItem("bread-tenant");
         const integrationKey = sessionStorage.getItem("integration-key");
-
 
         const initPage = function () {
             // Check for the user's environment and tenant
@@ -1108,21 +1622,28 @@
                 window.breadPage = page;
                 page.controller.setCustomCSS(sessionStorage.getItem('bread-custom-css') || '');
                 if (sessionStorage.getItem('bread-disabled') != 'on' || location.search == '?bread_test') {
-                    page.controller.makeBread(integrationKey);
+                    if (page.type === "product" && sessionStorage.getItem("bread-disable-product-button") === "on") {
+                        console.log("Bread button disabled on this page")
+                    } else if (page.type === "cart" && sessionStorage.getItem("bread-disable-cart-button") === "on") {
+                        console.log("Bread button disabled on this page");
+                    } else {
+                        page.controller.makeBread(integrationKey);
+                    }
                 }
             };
 
             document.head.appendChild(script);
 
             // Micromodal.js
-			$('body').append('<script type="text/javascript" src="/v/bread/js/micromodal.min.js"></script>');
-			$('body').append('<link rel="stylesheet" href="/v/bread/css/micromodal.css" />');
+            $('body').append('<script type="text/javascript" src="/v/bread/js/micromodal.min.js"></script>');
+            $('body').append('<link rel="stylesheet" href="/v/bread/css/micromodal.css" />');
 
         };
 
         // Fetch environment and api key if needed
         if (!api_key) {
             $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
+                console.log(settings)
                 if (settings.success) {
                     sessionStorage.setItem('bread-environment', settings.environment);
                     sessionStorage.setItem('bread-api-key', settings.platform_api_key);
@@ -1132,6 +1653,8 @@
                     sessionStorage.setItem('bread-disable-cart-checkout', settings.disable_cart_checkout);
                     sessionStorage.setItem("bread-tenant", settings.bread_tenant);
                     sessionStorage.setItem("integration-key", settings.integration_key);
+                    sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
+                    sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
                     breadEnv = settings.environment;
                     api_key = settings.platform_api_key;
                     initPage();
@@ -1139,7 +1662,11 @@
             });
         }
         else {
-            initPage();
+            $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
+                sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
+                sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
+                initPage();
+            })
         }
 
     });
