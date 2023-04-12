@@ -187,6 +187,20 @@
 		</div>
 	</div>
 	<div class="form-group">
+		<label for="bread_product_min" class="col-md-2 control-label">Minimum Product Value</label>
+		<div class="col-md-6">
+			<input pattern="^[1-9]\d*(\.\d+)?$" type="text" id="bread_product_min" name="bread_product_min" class="form-control" value="<% = dct_setup("bread_product_min") %>">
+			<p>Select the minimum price on which the promotion will be shown. Blank or 0 = no minimum. Use numbers and decimals only. Ex. 100 or 50.25</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="bread_product_max" class="col-md-2 control-label">Maximum Product Value</label>
+		<div class="col-md-6">
+			<input pattern="^[1-9]\d*(\.\d+)?$" type="text" id="bread_product_max" name="bread_product_max" class="form-control" value="<% = dct_setup("bread_product_max") %>">
+			<p>Select the maximum price on which the promotion will be shown. Blank or 0 = no maximum. Use numbers and decimals only. Ex. 100 or 50.25</p>
+		</div>
+	</div>
+	<div class="form-group">
 		<label class="col-md-2 control-label">Disable Product Page Checkout</label>
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_product_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">

@@ -15,6 +15,8 @@ bread_platform_auth|
 bread_classic_api_key|
 bread_classic_api_secret|
 bread_classic_auth|
+bread_product_min|0
+bread_product_max|0
 bread_payment_method_id|
 bread_payment_settle|
 bread_disable_product_checkout|

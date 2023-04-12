@@ -324,8 +324,6 @@
                             })
                         });
 
-                        console.log("hi")
-
                         $.ajax({
                             method: 'post',
                             dataType: 'json',
@@ -669,6 +667,17 @@
             });
 
             return JSON.parse(crapJSON);
+        },
+
+        minMaxCheck: function (price) {
+            const breadMin = Math.round(Number(sessionStorage.getItem("bread-product-min")) * 100);
+            const breadMax = Math.round(Number(sessionStorage.getItem("bread-product-max")) * 100);
+
+           if ((breadMax === 0 && price > breadMin) || (price > breadMin && price < breadMax)) {
+            return true;
+           }
+           return false;
+
         }
 
     });
@@ -701,51 +710,53 @@
                  * We then add that info to the placement, which is pushed to bread via registerPlacements() to generate buttons with applicable prices.
                  */
 
-                var products = $('.v-product');
+                const products = $('.v-product');
                 const placements = [];
 
                 // Add the bread button to each product on the page
                 products.each(function (i) {
-                    var product = $(this);
-                    var button = $(self.buttonHtml);
-                    var buttonId = 'bread-checkout-btn-' + i;
+                    const product = $(this);
+                    const button = $(self.buttonHtml);
+                    const buttonId = 'bread-checkout-btn-' + i;
 
-                    let item = self.getCheckoutParams(product, buttonId)
-                    let productArray = item.items
-                    let price = productArray[0].price
+                    const item = self.getCheckoutParams(product, buttonId)
+                    const productArray = item.items
+                    const price = productArray[0].price
 
-                    button.attr('id', buttonId);
-                    product.append(button);
+                    // Check that the price is between min and max set prices
+                    if (self.minMaxCheck(price)) {
+                        button.attr('id', buttonId);
+                        product.append(button);
 
-                    placements.push({
-                        financingType: "installment",
-                        domID: buttonId,
-                        allowCheckout: false,
-                        order: {
-                            items: [],
-                            subTotal: {
-                                value: price,
-                                currency: "USD",
-                            },
-                            totalDiscounts: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalShipping: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalTax: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalPrice: {
-                                value: price,
-                                currency: "USD",
-                            },
-                        }
-                    })
-
+                        placements.push({
+                            financingType: "installment",
+                            domID: buttonId,
+                            allowCheckout: false,
+                            order: {
+                                items: [],
+                                subTotal: {
+                                    value: price,
+                                    currency: "USD",
+                                },
+                                totalDiscounts: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalShipping: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalTax: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalPrice: {
+                                    value: price,
+                                    currency: "USD",
+                                },
+                            }
+                        })
+                    };
                 });
 
                 window.BreadPayments.setup({
@@ -827,10 +838,6 @@
             makeBread: function (integrationKey) {
                 var self = this;
 
-                // Inserts the bread button underneath the Product
-                var button = $(this.buttonHtml);
-                this.insertButton(button);
-
                 /** 
                  * Bread uses [placements] to fill in information about the product and apply it to the pre-qualification button.
                  * In order to get that information, we run getCheckoutParams, which returns information about that product.
@@ -840,50 +847,58 @@
                  */
 
                 const placements = [];
-                let item = self.getCheckoutParams()
-                let productArray = item.items
-                let price = productArray[0].price
+                const item = self.getCheckoutParams()
+                const productArray = item.items
+                const price = productArray[0].price
 
-                placements.push({
-                    financingType: "installment",
-                    domID: "bread-checkout-btn",
-                    allowCheckout: false,
-                    order: {
-                        items: [],
-                        subTotal: {
-                            value: price,
-                            currency: "USD",
-                        },
-                        totalDiscounts: {
-                            value: 0,
-                            currency: "USD",
-                        },
-                        totalShipping: {
-                            value: 0,
-                            currency: "USD",
-                        },
-                        totalTax: {
-                            value: 0,
-                            currency: "USD",
-                        },
-                        totalPrice: {
-                            value: price,
-                            currency: "USD",
-                        },
-                    }
-                });
+                // Check that the price is between min and max set prices
+                if (self.minMaxCheck(price)) {
 
-                window.BreadPayments.setup({
-                    integrationKey: integrationKey
-                });
+                    // Inserts the bread button underneath the Product
+                    var button = $(this.buttonHtml);
+                    this.insertButton(button);
 
-                window.BreadPayments.registerPlacements(placements);
+                    placements.push({
+                        financingType: "installment",
+                        domID: "bread-checkout-btn",
+                        allowCheckout: false,
+                        order: {
+                            items: [],
+                            subTotal: {
+                                value: price,
+                                currency: "USD",
+                            },
+                            totalDiscounts: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalShipping: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalTax: {
+                                value: 0,
+                                currency: "USD",
+                            },
+                            totalPrice: {
+                                value: price,
+                                currency: "USD",
+                            },
+                        }
+                    });
 
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                    window.BreadPayments.setup({
+                        integrationKey: integrationKey
+                    });
 
-                window.BreadPayments.__internal__.init();
+                    window.BreadPayments.registerPlacements(placements);
+
+                    window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                    window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                    window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+
+                    window.BreadPayments.__internal__.init();
+                };
             },
 
             /**
@@ -1029,58 +1044,61 @@
              * @return	void
              */
             makeBread: function (integrationKey) {
-                var button = $(this.buttonHtml);
+                const self = this;
+                const button = $(this.buttonHtml);
                 this.insertButton(button);
-
 
                 const placements = [];
 
                 $.when(this.getCheckoutParams()).done(function (params) {
 
-                    let productArray = params.items
-                    let price = productArray[0].price
+                    const productArray = params.items;
+                    const price = productArray[0].price;
 
-                    placements.push({
-                        financingType: "installment",
-                        domID: "bread-checkout-btn",
-                        allowCheckout: false,
-                        order: {
-                            items: [],
-                            subTotal: {
-                                value: price,
-                                currency: "USD",
-                            },
-                            totalDiscounts: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalShipping: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalTax: {
-                                value: 0,
-                                currency: "USD",
-                            },
-                            totalPrice: {
-                                value: price,
-                                currency: "USD",
-                            },
-                        }
-                    });
+                    // Check that the price is between min and max set prices
+                    if (self.minMaxCheck(price)) {
 
-                    window.BreadPayments.setup({
-                        integrationKey: integrationKey
-                    });
+                        placements.push({
+                            financingType: "installment",
+                            domID: "bread-checkout-btn",
+                            allowCheckout: false,
+                            order: {
+                                items: [],
+                                subTotal: {
+                                    value: price,
+                                    currency: "USD",
+                                },
+                                totalDiscounts: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalShipping: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalTax: {
+                                    value: 0,
+                                    currency: "USD",
+                                },
+                                totalPrice: {
+                                    value: price,
+                                    currency: "USD",
+                                },
+                            }
+                        });
 
-                    window.BreadPayments.registerPlacements(placements);
+                        window.BreadPayments.setup({
+                            integrationKey: integrationKey
+                        });
 
-                    window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                    window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                    window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                        window.BreadPayments.registerPlacements(placements);
 
-                    window.BreadPayments.__internal__.init();
+                        window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                        window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                        window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
 
+                        window.BreadPayments.__internal__.init();
+                    };
                 });
             },
 
@@ -1234,7 +1252,6 @@
                     shippingPriceArray.shift();
                     shippingPriceArray = shippingPriceArray.reverse();
                     const shippingPriceString = shippingPriceArray.join("");
-                    console.log(shippingPriceString);
                     const totalShipping = Number(shippingPriceString.replace(/[^0-9.-]+/g, "")) * 100;
 
                     shippingChoiceArray = shippingChoiceArray.reverse()
@@ -1267,7 +1284,6 @@
 
                         const totalShipping = shippingChoice.shippingCost
 
-                        // const totalTax = params.taxAndShipping.tax
                         const totalTaxString = $("#TotalsTax1TD").text();
                         const totalTax = Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100;
 
@@ -1289,102 +1305,101 @@
 
                         const totalPrice = subTotal + totalTax + totalShipping - totalDiscounts;
 
-                        const placement = {
-                            locationType: "checkout",
-                            domID: "bread-checkout-btn",
-                            allowCheckout: true,
-                            order: {
-                                items: params.items,
-                                subTotal: {
-                                    value: subTotal,
-                                    currency: "USD",
-                                },
-                                totalTax: totalTax,
-                                totalShipping: totalShipping,
-                                totalDiscounts: totalDiscounts,
-                                totalPrice: {
-                                    value: totalPrice,
-                                    currency: "USD",
-                                },
-                            }
-                        };
+                        // Check that the price is between min and max set prices
+                        if (self.minMaxCheck(subTotal)) {
 
-                        window.BreadPayments.registerPlacements([placement]);
-
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
-
-                            // There may be a better way to do this, but the jsonHelper Decode function breaks nested objects, 
-                            // so I have to send the customer contact info here or else it doesn't work,
-                            // But I also have to restructure it so there are no nested objects
-
-                            let contactInfo = {
-                                firstName: params.givenName,
-                                lastName: params.familyName,
-                                fullName: `${params.givenName} ${params.familyName}`,
-                                email: params.email,
-                                phone: params.phone
-                            }
-
-                            // asp can't parse JSON natively, so we have to transform these objects into strings
-                            // the use jsonHelper to convert and manipulate them in the asp files.
-
-                            var data = {
-                                tx_id: response.transactionID,
-                                shippingID: shippingChoice.shippingID,
-                                amount: JSON.stringify({ currency: "USD", value: response.order.totalPrice.value }),
-                                billingAddress: JSON.stringify(params.billingAddress),
-                                shippingAddress: JSON.stringify(params.shippingAddress),
-                                contactInfo: JSON.stringify(contactInfo)
+                            const placement = {
+                                locationType: "checkout",
+                                domID: "bread-checkout-btn",
+                                allowCheckout: true,
+                                order: {
+                                    items: params.items,
+                                    subTotal: {
+                                        value: subTotal,
+                                        currency: "USD",
+                                    },
+                                    totalTax: totalTax,
+                                    totalShipping: totalShipping,
+                                    totalDiscounts: totalDiscounts,
+                                    totalPrice: {
+                                        value: totalPrice,
+                                        currency: "USD",
+                                    },
+                                }
                             };
 
-                            // Add in any variable options selected for the product
-                            $.each(params.items, function (i, item) {
-                                if (item.options) {
-                                    if (item.options._values) {
-                                        data[item.sku + '_options'] = item.options._values.join('');
-                                    }
+                            window.BreadPayments.registerPlacements([placement]);
+
+                            window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+
+                            window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
+
+                                // The jsonHelper Decode function breaks nested objects, 
+                                // so I have to send the customer contact info here or else it doesn't work,
+                                // But I also have to restructure it so there are no nested objects
+
+                                let contactInfo = {
+                                    firstName: params.givenName,
+                                    lastName: params.familyName,
+                                    fullName: `${params.givenName} ${params.familyName}`,
+                                    email: params.email,
+                                    phone: params.phone
                                 }
-                            });
 
-                            // Send along the order items to process. The bread backend doesnt maintain
-                            // the correct order of transaction line items, so we may need this.
-                            data.items = params.items.map(function (item) {
-                                var line = Object.assign({}, item);
-                                line.product = { name: line.name };
-                                delete line.name;
-                                return line;
-                            });
+                                // asp can't parse JSON natively, so we have to transform these objects into strings
+                                // the use jsonHelper to convert and manipulate them in the asp files.
 
-                            data.items = JSON.stringify(data.items)
+                                var data = {
+                                    tx_id: response.transactionID,
+                                    shippingID: shippingChoice.shippingID,
+                                    amount: JSON.stringify({ currency: "USD", value: response.order.totalPrice.value }),
+                                    billingAddress: JSON.stringify(params.billingAddress),
+                                    shippingAddress: JSON.stringify(params.shippingAddress),
+                                    contactInfo: JSON.stringify(contactInfo)
+                                };
 
-                            $.ajax({
-                                method: 'post',
-                                dataType: 'json',
-                                url: BREAD_ORDER_PROCESSING_URL,
-                                data: data
-                            }).then(function (response) {
-                                console.log(response)
-                                if (response.success) {
-                                    console.log("success")
-                                    if (self.clearCart) {
-                                        self.setCookie(self.cart_cookie, '');
-                                        console.log("successcookie")
+                                // Add in any variable options selected for the product
+                                $.each(params.items, function (i, item) {
+                                    if (item.options) {
+                                        if (item.options._values) {
+                                            data[item.sku + '_options'] = item.options._values.join('');
+                                        }
                                     }
-                                    self.orderComplete(response, params);
-                                } else {
-                                    alert(response.message);
-                                }
+                                });
+
+                                // Send along the order items to process. The bread backend doesnt maintain
+                                // the correct order of transaction line items, so we may need this.
+                                data.items = params.items.map(function (item) {
+                                    var line = Object.assign({}, item);
+                                    line.product = { name: line.name };
+                                    delete line.name;
+                                    return line;
+                                });
+
+                                data.items = JSON.stringify(data.items)
+
+                                $.ajax({
+                                    method: 'post',
+                                    dataType: 'json',
+                                    url: BREAD_ORDER_PROCESSING_URL,
+                                    data: data
+                                }).then(function (response) {
+                                    if (response.success) {
+                                        if (self.clearCart) {
+                                            self.setCookie(self.cart_cookie, '');
+                                        }
+                                        self.orderComplete(response, params);
+                                    } else {
+                                        alert(response.message);
+                                    }
+                                });
                             });
-                        });
 
-                        window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                            window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
 
-                        window.BreadPayments.__internal__.init();
+                            window.BreadPayments.__internal__.init();
+                        }
                     });
-
-
                 };
 
 
@@ -1643,7 +1658,6 @@
         // Fetch environment and api key if needed
         if (!api_key) {
             $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
-                console.log(settings)
                 if (settings.success) {
                     sessionStorage.setItem('bread-environment', settings.environment);
                     sessionStorage.setItem('bread-api-key', settings.platform_api_key);
@@ -1655,6 +1669,8 @@
                     sessionStorage.setItem("integration-key", settings.integration_key);
                     sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
                     sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
+                    sessionStorage.setItem("bread-product-min", settings.bread_product_min);
+                    sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                     breadEnv = settings.environment;
                     api_key = settings.platform_api_key;
                     initPage();
@@ -1665,6 +1681,8 @@
             $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
                 sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
                 sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
+                sessionStorage.setItem("bread-product-min", settings.bread_product_min);
+                sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                 initPage();
             })
         }
