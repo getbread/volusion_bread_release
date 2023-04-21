@@ -310,4 +310,10 @@
 	</div>
 </form>
 
+</br></br>
+<div class="col-md-4 col-md-offset-3">
+	<p>Click below to refresh the Bread Merchant Portal</p>
+	<button class="btn btn-default btn-block" id="bread_refresh">Refresh Bread</button>
+</div>
+
 <!--#include file="_footer.inc"-->

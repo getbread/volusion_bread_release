@@ -7,8 +7,6 @@
 
 <%
 
-' send the buyer info in through the javascript, see if you can get that working. Actually I think that's a bad idea. Could break the request. And the data is coming in in the request. It's just being lost in the file tranfser. I think it has something to do with the ASP encoder
-
 Dim jsonHelper : Set jsonHelper = New VbsJson
 Dim tx_id : tx_id = Request.Form("tx_id")
 Dim amount : amount = Request.Form("amount")
@@ -16,6 +14,7 @@ Dim billingAddress : billingAddress = Request.Form("billingAddress")
 Dim shippingAddress : shippingAddress = Request.Form("shippingAddress")
 Dim contactInfo : contactInfo = Request.Form("contactInfo")
 Dim purchaseItems : purchaseItems = Request.Form("items")
+Dim shippingID : shippingID = request.Form("shippingID")
 Dim bread : Set bread = (New BreadClassicApi)( dct_settings("bread_classic_api_key"), dct_settings("bread_classic_api_secret") )
 Dim breadPlatform : Set breadPlatform = (New BreadPlatformApi)( dct_settings("bread_platform_api_key"), dct_settings("bread_platform_api_secret") )
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
@@ -30,12 +29,6 @@ Set authorization = breadPlatform.authorizeTransaction( tx_id, amount )
 Set transaction = breadPlatform.getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems )
 
 If Not transaction("error") Then
-
-			Set bread_fso = Server.CreateObject("Scripting.FileSystemObject")
-			Set bread_log = bread_fso.OpenTextFile(Server.MapPath("/v/bread/asp/log-bread-order.inc"), 8, True)
-			bread_log.WriteLine( "-------------------------------" )
-			bread_log.WriteLine("transaction: " & jsonHelper.Encode( transaction ))
-			' bread_log.Close
 
 	If transaction("status") = "AUTHORIZED" Then
 		
@@ -103,7 +96,7 @@ If Not transaction("error") Then
 			new_order.Add "ShipState", transaction("shippingContact")("region")
 			new_order.Add "ShipPostalCode", transaction("shippingContact")("postalCode")
 			new_order.Add "ShipPhoneNumber", transaction("contactInfo")("phone")
-			new_order.Add "ShippingMethodID", transaction("shippingID")
+			new_order.Add "ShippingMethodID", shippingID
 			new_order.Add "TotalShippingCost", Round( transaction("shippingAmount")("value") / 100, 2 )
 			new_order.Add "IsGTSOrder", "False"
 			new_order.Add "OrderStatus", dct_settings("completed_order_status")
@@ -134,8 +127,8 @@ If Not transaction("error") Then
 					
 					order_line.Add "ProductCode", "Surcharge"
 					order_line.Add "ProductName", "<![CDATA[" & line("product")("name") & "]]>"
-					order_line.Add "ProductPrice", Round( line("price") / 100, 2 )
-					order_line.Add "TotalPrice", Round( line("price") / 100, 2 )		
+					order_line.Add "ProductPrice", Round( line("unitPrice") / 100, 2 )
+					order_line.Add "TotalPrice", Round( line("unitPrice") / 100, 2 )		
 					order_line.Add "Quantity", 1
 					
 					ReDim Preserve order_details( UBound( order_details ) + 1 )
@@ -149,9 +142,9 @@ If Not transaction("error") Then
 					order_line.Add "ProductID", product.SelectSingleNode("//Products/ProductID").text
 					order_line.Add "ProductCode", line("sku")
 					order_line.Add "ProductName", "<![CDATA[" & line("product")("name") & "]]>"
-					order_line.Add "ProductPrice", Round( line("price") / 100, 2 )
+					order_line.Add "ProductPrice", Round( line("unitPrice") / 100, 2 )
 					order_line.Add "Quantity", line("quantity")
-					order_line.Add "TotalPrice", Round( ( line("price") * line("quantity") ) / 100, 2 )			
+					order_line.Add "TotalPrice", Round( ( line("unitPrice") * line("quantity") ) / 100, 2 )			
 					order_line.Add "Options", Request.Form( line("sku") & "_options" )
 					
 					Set product_weight = product.SelectSingleNode("//Products/ProductWeight")

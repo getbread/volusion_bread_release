@@ -1290,7 +1290,7 @@
                         let subTotal = 0;
                         params.items.forEach(item => {
 
-                            subTotal += item.unitPrice;
+                            subTotal += item.unitPrice * item.quantity;
 
                             item.shippingCost = totalShipping;
                             item.unitTax = 0;
@@ -1307,6 +1307,8 @@
 
                         // Check that the price is between min and max set prices
                         if (self.minMaxCheck(subTotal)) {
+
+                            console.log(params)
 
                             const placement = {
                                 locationType: "checkout",

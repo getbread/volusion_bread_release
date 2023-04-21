@@ -83,6 +83,7 @@ Class BreadPlatformAPI
 		payload.Add "shippingAddress", jsonHelper.Decode(shippingAddress)
 		payload.Add "contactInfo", jsonHelper.Decode(contactInfo)
 		payload.Add "items", jsonHelper.Decode(purchaseItems)
+		payload.Add "shippingID", shippingID
 		
 		Set getTransaction = getRequest( "GET", "/api/transaction/" + tx_id, payload )
 		
@@ -108,9 +109,13 @@ Class BreadPlatformAPI
 	' @param	string			tx_id			The bread transaction id
 	' @param	Dictionary		payload			The request payload
 	' @return	Dictionary						The api JSON response
-	Public Function updateTransaction( tx_id, payload )
+	Public Function updateTransaction( tx_id, externalID )
+
+		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
 	
-		Set updateTransaction = makeRequest( "PATCH", "api/transaction/" & tx_id, payload )
+		payload.Add "type", "update"
+		payload.Add "externalID", externalID
+		Set updateTransaction = makeRequest( "PATCH", "/api/transaction/" & tx_id, payload )
 		
 	End Function
 	
@@ -118,13 +123,14 @@ Class BreadPlatformAPI
 	'
 	' @param	string			tx_id			The bread transaction id
 	' @return	Dictionary						The api JSON response
-	Public Function settleTransaction( tx_id )
-	
+	Public Function settleTransaction( tx_id, amount )
+
 		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
-		
+
 		payload.Add "type", "settle"
+		payload.Add "amount", jsonHelper.Decode(amount)
 		
-		Set settleTransaction = makeRequest( "POST", "/transaction/" + tx_id + "/settle", payload )
+		Set settleTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/settle", payload )
 		
 	End Function
 	
@@ -132,11 +138,12 @@ Class BreadPlatformAPI
 	'
 	' @param	string			tx_id			The bread transaction id
 	' @return	Dictionary						The api JSON response
-	Public Function cancelTransaction( tx_id )
+	Public Function cancelTransaction( tx_id, amount )
 	
 		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
-		
+
 		payload.Add "type", "cancel"
+		payload.Add "amount", jsonHelper.Decode(amount)
 		
 		Set cancelTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/cancel", payload )
 		
@@ -146,11 +153,12 @@ Class BreadPlatformAPI
 	'
 	' @param	string			tx_id			The bread transaction id
 	' @return	Dictionary						The api JSON response
-	Public Function refundTransaction( tx_id )
-	
+	Public Function refundTransaction( tx_id, amount )
+
 		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
-		
+			
 		payload.Add "type", "refund"
+		payload.Add "amount", jsonHelper.Decode(amount)
 		
 		Set refundTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
 		
