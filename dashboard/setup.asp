@@ -189,15 +189,34 @@
 	<div class="form-group">
 		<label for="bread_product_min" class="col-md-2 control-label">Minimum Product Value</label>
 		<div class="col-md-6">
-			<input pattern="^[1-9]\d*(\.\d+)?$" type="text" id="bread_product_min" name="bread_product_min" class="form-control" value="<% = dct_setup("bread_product_min") %>">
+			<input type="number" step="0.01" id="bread_product_min" name="bread_product_min" class="form-control" value="<% = dct_setup("bread_product_min") %>">
 			<p>Select the minimum price on which the promotion will be shown. Blank or 0 = no minimum. Use numbers and decimals only. Ex. 100 or 50.25</p>
 		</div>
 	</div>
 	<div class="form-group">
 		<label for="bread_product_max" class="col-md-2 control-label">Maximum Product Value</label>
 		<div class="col-md-6">
-			<input pattern="^[1-9]\d*(\.\d+)?$" type="text" id="bread_product_max" name="bread_product_max" class="form-control" value="<% = dct_setup("bread_product_max") %>">
+			<input type="number" step="0.01" id="bread_product_max" name="bread_product_max" class="form-control" value="<% = dct_setup("bread_product_max") %>">
 			<p>Select the maximum price on which the promotion will be shown. Blank or 0 = no maximum. Use numbers and decimals only. Ex. 100 or 50.25</p>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="bread_enable_sku_filter" class="col-md-2 control-label">Enable Filtering by Product Code</label>
+		<div class="col-md-6">
+			<select id="bread_enable_sku_filter" name="bread_enable_sku_filter" class="form-control">
+				<option value="Off"<% If dct_setup("bread_enable_sku_filter") = "Off" Then %> selected<% End If %>>Off</option>
+				<option value="Include"<% If dct_setup("bread_enable_sku_filter") = "Include" Then %> selected<% End If %>>Include</option>
+				<option value="Exclude"<% If dct_setup("bread_enable_sku_filter") = "Exclude" Then %> selected<% End If %>>Exclude</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="bread_sku_filter_list" class="col-md-2 control-label">List product codes to include or exclude:</label>
+		<div class="col-md-6">
+			<input type="text" id="bread_sku_filter_list" name="bread_sku_filter_list" class="form-control" value="<% = dct_setup("bread_sku_filter_list") %>">
+			<p>
+			To include or exclude only certain products as available for payment via Bread, choose include or exclude from the dropdown above, and list the product code of each item on which you want to include or exclude Bread checkout, separated by commas. If you choose include, only the products with codes listed here will be available for Bread payment. If you choose exclude, all products except those listed here will be available for Bread payment.
+			</p>
 		</div>
 	</div>
 	<div class="form-group">

@@ -17,6 +17,8 @@ bread_classic_api_secret|
 bread_classic_auth|
 bread_product_min|0
 bread_product_max|0
+bread_enable_sku_filter|Off
+bread_sku_filter_list|
 bread_payment_method_id|
 bread_payment_settle|
 bread_disable_product_checkout|
