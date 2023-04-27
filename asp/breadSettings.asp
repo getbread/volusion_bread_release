@@ -24,6 +24,7 @@ output.Add "disable_cart_button", dct_settings("bread_disable_cart_button")
 output.Add "bread_payment_method_id", dct_settings("bread_payment_method_id")
 output.Add "bread_enable_sku_filter", dct_settings("bread_enable_sku_filter")
 output.Add "bread_sku_filter_list", dct_settings("bread_sku_filter_list")
+output.Add "bread_embedded_checkout", dct_settings("bread_embedded_checkout")
 
 Response.Write jsonHelper.Encode( output )
 %>

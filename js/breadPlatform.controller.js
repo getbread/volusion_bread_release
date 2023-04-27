@@ -1332,10 +1332,23 @@
                             shippingAddress: params.shippingAddress
                         }
 
-                        window.BreadPayments.setup({
-                            integrationKey: integrationKey,
-                            buyer: buyer
-                        });
+                        if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
+                            window.BreadPayments.setup({
+                                integrationKey: integrationKey,
+                                buyer: buyer
+                            });
+                        } else {
+                            const td = $('#divbtnSubmitOrder');
+                            td.before("<div id='checkout-container'></div>");
+
+                            window.BreadPayments.setEmbedded(true);
+
+                            window.BreadPayments.setup({
+                                integrationKey: integrationKey,
+                                buyer: buyer,
+                                containerID: "checkout-container"
+                            });
+                        };
 
                         const totalShipping = shippingChoice.shippingCost
 
@@ -1709,8 +1722,8 @@
                         console.log("Bread button disabled on this page");
                     } else {
                         page.controller.makeBread(integrationKey);
-                    }
-                }
+                    };
+                };
             };
 
             document.head.appendChild(script);
@@ -1739,6 +1752,7 @@
                     sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                     sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                     sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
+                    sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
                     breadEnv = settings.environment;
                     api_key = settings.platform_api_key;
                     initPage();
@@ -1753,6 +1767,7 @@
                 sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                 sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
+                sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
                 initPage();
             })
         }

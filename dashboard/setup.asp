@@ -220,6 +220,15 @@
 		</div>
 	</div>
 	<div class="form-group">
+		<label class="col-md-2 control-label">Embedded Checkout</label>
+		<div class="col-md-6 checkbox">
+			<label for="bread_embedded_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
+				<input type="checkbox" id="bread_embedded_checkout" name="bread_embedded_checkout" value="on"<% If dct_setup("bread_embedded_checkout") = "on" Then %> checked="checked"<% End If %> />
+				Embed Bread Checkout Form directly in page rather than via a pop-up modal (default: off)
+			</label>
+		</div>
+	</div>
+	<div class="form-group">
 		<label class="col-md-2 control-label">Disable Product Page Checkout</label>
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_product_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
