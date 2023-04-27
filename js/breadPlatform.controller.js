@@ -715,6 +715,22 @@
             };
 
             return false;
+        },
+
+        getCurrency: function () {
+            if (sessionStorage.getItem("bread-tenant") === "ADS") {
+                return "USD"
+            } else {
+                return "CAD"
+            };
+        },
+
+        getBreadObject: function () {
+            if (sessionStorage.getItem("bread-tenant") === "ADS") {
+                return window.BreadPayments
+            } else {
+                return window.RBCPayPlan
+            };
         }
     });
 
@@ -766,6 +782,8 @@
                             button.attr('id', buttonId);
                             product.append(button);
 
+                            const currency = self.getCurrency();
+
                             placements.push({
                                 financingType: "installment",
                                 domID: buttonId,
@@ -774,23 +792,23 @@
                                     items: [],
                                     subTotal: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalDiscounts: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalShipping: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalTax: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalPrice: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                 }
                             });
@@ -798,17 +816,19 @@
                     };
                 });
 
-                window.BreadPayments.setup({
+                const breadObject = self.getBreadObject();
+
+                breadObject.setup({
                     integrationKey: integrationKey
                 });
 
-                window.BreadPayments.registerPlacements(placements);
+                breadObject.registerPlacements(placements);
 
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                breadObject.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                breadObject.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                breadObject.on('INSTALLMENT:INITIALIZED', () => { });
 
-                window.BreadPayments.__internal__.init();
+                breadObject.__internal__.init();
             },
 
             /**
@@ -899,6 +919,8 @@
                         var button = $(this.buttonHtml);
                         this.insertButton(button);
 
+                        const currency = self.getCurrency();
+
                         placements.push({
                             financingType: "installment",
                             domID: "bread-checkout-btn",
@@ -907,38 +929,40 @@
                                 items: [],
                                 subTotal: {
                                     value: price,
-                                    currency: "USD",
+                                    currency: currency,
                                 },
                                 totalDiscounts: {
                                     value: 0,
-                                    currency: "USD",
+                                    currency: currency,
                                 },
                                 totalShipping: {
                                     value: 0,
-                                    currency: "USD",
+                                    currency: currency,
                                 },
                                 totalTax: {
                                     value: 0,
-                                    currency: "USD",
+                                    currency: currency,
                                 },
                                 totalPrice: {
                                     value: price,
-                                    currency: "USD",
+                                    currency: currency,
                                 },
                             }
                         });
 
-                        window.BreadPayments.setup({
+                        const breadObject = self.getBreadObject();
+
+                        breadObject.setup({
                             integrationKey: integrationKey
                         });
 
-                        window.BreadPayments.registerPlacements(placements);
+                        breadObject.registerPlacements(placements);
 
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                        window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                        breadObject.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                        breadObject.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                        breadObject.on('INSTALLMENT:INITIALIZED', () => { });
 
-                        window.BreadPayments.__internal__.init();
+                        breadObject.__internal__.init();
 
                     };
                 };
@@ -1114,6 +1138,9 @@
                     // Check that the price is between min and max set prices
                     if (self.minMaxCheck(price)) {
                         if (excluded_products.length === 0) {
+
+                            const currency = self.getCurrency();
+
                             placements.push({
                                 financingType: "installment",
                                 domID: "bread-checkout-btn",
@@ -1122,38 +1149,40 @@
                                     items: [],
                                     subTotal: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalDiscounts: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalShipping: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalTax: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalPrice: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                 }
                             });
 
-                            window.BreadPayments.setup({
+                            const breadObject = self.getBreadObject();
+
+                            breadObject.setup({
                                 integrationKey: integrationKey
                             });
 
-                            window.BreadPayments.registerPlacements(placements);
+                            breadObject.registerPlacements(placements);
 
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                            window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                            breadObject.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                            breadObject.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                            breadObject.on('INSTALLMENT:INITIALIZED', () => { });
 
-                            window.BreadPayments.__internal__.init();
+                            breadObject.__internal__.init();
                         };
                     };
                 });
@@ -1286,6 +1315,7 @@
 
                 var button = $(this.buttonHtml);
                 this.insertButton(button);
+                const breadObject = self.getBreadObject();
 
                 let getShippingChoice = () => {
                     const shippingID = document.getElementsByName("ShippingSpeedChoice")[0].value;
@@ -1319,7 +1349,8 @@
                 var refreshCheckoutParams = function () {
                     $.when(self.getCheckoutParams()).done(function (params) {
 
-                        const shippingChoice = getShippingChoice()
+                        const shippingChoice = getShippingChoice();
+                        const currency = self.getCurrency();
 
                         const buyer = {
                             givenName: params.givenName,
@@ -1333,7 +1364,7 @@
                         }
 
                         if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
-                            window.BreadPayments.setup({
+                            breadObject.setup({
                                 integrationKey: integrationKey,
                                 buyer: buyer
                             });
@@ -1341,9 +1372,9 @@
                             const td = $('#divbtnSubmitOrder');
                             td.before("<div id='checkout-container'></div>");
 
-                            window.BreadPayments.setEmbedded(true);
+                            breadObject.setEmbedded(true);
 
-                            window.BreadPayments.setup({
+                            breadObject.setup({
                                 integrationKey: integrationKey,
                                 buyer: buyer,
                                 containerID: "checkout-container"
@@ -1366,9 +1397,15 @@
                                 excluded_products.push(product_name);
                             };
 
-                            subTotal += item.unitPrice * item.quantity;
-                            item.shippingCost = totalShipping;
-                            item.unitTax = 0;
+                            subTotal += item.unitPrice.value * item.quantity;
+                            item.shippingCost = {
+                                value: totalShipping,
+                                currency: currency,
+                            };
+                            item.unitTax = {
+                                value: 0,
+                                currency: currency,
+                            };
                             item.shippingDescription = shippingChoice.shippingDescription
 
                         });
@@ -1381,7 +1418,7 @@
 
                                 let totalDiscounts = 0;
                                 params.discounts.forEach(discount => {
-                                    totalDiscounts += discount.unitPrice;
+                                    totalDiscounts += discount.unitPrice.value;
                                 });
 
                                 const totalPrice = subTotal + totalTax + totalShipping - totalDiscounts;
@@ -1394,23 +1431,32 @@
                                         items: params.items,
                                         subTotal: {
                                             value: subTotal,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
-                                        totalTax: totalTax,
-                                        totalShipping: totalShipping,
-                                        totalDiscounts: totalDiscounts,
+                                        totalTax: {
+                                            value: totalTax,
+                                            currency: currency,
+                                        },
+                                        totalShipping: {
+                                            value: totalShipping,
+                                            currency: currency,
+                                        },
+                                        totalDiscounts: {
+                                            value: totalDiscounts,
+                                            currency: currency,
+                                        },
                                         totalPrice: {
                                             value: totalPrice,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                     }
                                 };
 
-                                window.BreadPayments.registerPlacements([placement]);
+                                breadObject.registerPlacements([placement]);
 
-                                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                                breadObject.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
 
-                                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
+                                breadObject.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
 
                                     // The jsonHelper Decode function breaks nested objects, 
                                     // so I have to send the customer contact info here or else it doesn't work,
@@ -1430,7 +1476,7 @@
                                     var data = {
                                         tx_id: response.transactionID,
                                         shippingID: shippingChoice.shippingID,
-                                        amount: JSON.stringify({ currency: "USD", value: response.order.totalPrice.value }),
+                                        amount: JSON.stringify({ currency: currency, value: response.order.totalPrice.value }),
                                         billingAddress: JSON.stringify(params.billingAddress),
                                         shippingAddress: JSON.stringify(params.shippingAddress),
                                         contactInfo: JSON.stringify(contactInfo)
@@ -1454,6 +1500,8 @@
                                         return line;
                                     });
 
+                                    console.log(data)
+
                                     data.items = JSON.stringify(data.items)
 
                                     $.ajax({
@@ -1473,9 +1521,9 @@
                                     });
                                 });
 
-                                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                                breadObject.on('INSTALLMENT:INITIALIZED', () => { });
 
-                                window.BreadPayments.__internal__.init();
+                                breadObject.__internal__.init();
                             };
                         };
                     });
@@ -1492,6 +1540,7 @@
                     'BillingCity', 'ShipCity',
                     'BillingState', 'ShipState',
                     'BillingPhoneNumber', 'ShipPhoneNumber',
+                    'BillingCountry', "ShipCountry"
                 ], function (i, name) {
                     $('input[name="' + name + '"]').on('change', refreshCheckoutParams);
                 });
@@ -1527,6 +1576,7 @@
                 var lineitems = $('table[id$="onepage-ordersummary-items"] tr').slice(1);
                 var detailsRequests = [];
                 var checkoutParams = $.Deferred();
+                const currency = self.getCurrency();
 
                 if (window.BREAD_USE_AJAX_CART) {
                     // fetch products details
@@ -1555,7 +1605,10 @@
                             } else if (price_in_cents > 0) {
                                 cart_surcharges.push({
                                     name: name + ' (' + itemSku + ')',
-                                    unitPrice: price_in_cents,
+                                    unitPrice: {
+                                        value: price_in_cents,
+                                        currency: currency,
+                                    },
                                     sku: 'SURCHARGE',
                                     detailUrl: location.href,
                                     quantity: quantity
@@ -1568,7 +1621,10 @@
                                 detailsRequests.push($.get('/Help_CartItemDetails.asp?CartID=' + cartID, function (itemDetailsPage) {
                                     items.push({
                                         name: name,
-                                        unitPrice: price_in_cents,
+                                        unitPrice: {
+                                            value: price_in_cents,
+                                            currency: currency,
+                                        },
                                         sku: itemSku,
                                         detailUrl: location.href,
                                         quantity: quantity,
@@ -1584,6 +1640,14 @@
                 var formValue = function (name) {
                     return $('input[name="' + name + '"]').val();
                 };
+                const billingCountryLongForm = document.getElementsByName("BillingCountry")[0].value;
+                const billingCountry = (billingCountryLongForm == "United States") ? "USA" :
+                    (billingCountryLongForm == "Canada") ? "CA" : "";
+                const shippingCountryLongForm = typeof document.getElementsByName("ShipCountry")[0] !== "undefined" ?
+                    document.getElementsByName("ShipCountry")[0].value :
+                    document.getElementsByName("BillingCountry")[0].value;
+                const shippingCountry = (shippingCountryLongForm == "United States") ? "USA" :
+                (shippingCountryLongForm == "Canada") ? "CA" : "";
 
                 var billingContact = {
                     firstName: formValue('BillingFirstName'),
@@ -1595,6 +1659,7 @@
                     state: formValue('BillingState'),
                     phone: formValue('BillingPhoneNumber'),
                     email: formValue('Email'),
+                    country: billingCountry
                 };
 
                 var shippingContact = {
@@ -1605,7 +1670,8 @@
                     zip: formValue('ShipPostalCode'),
                     city: formValue('ShipCity'),
                     state: formValue('ShipState'),
-                    phone: formValue('ShipPhoneNumber')
+                    phone: formValue('ShipPhoneNumber'),
+                    country: shippingCountry
                 };
 
                 $.when.apply($, detailsRequests).done(function () {
@@ -1637,7 +1703,7 @@
                             locality: billingContact.city,
                             region: billingContact.state,
                             postalCode: billingContact.zip,
-                            country: "US"
+                            country: billingContact.country
                         },
                         shippingAddress: {
                             address1: shippingContact.address,
@@ -1645,7 +1711,7 @@
                             locality: shippingContact.city,
                             region: shippingContact.state,
                             postalCode: shippingContact.zip,
-                            country: "US"
+                            country: shippingContact.country
                         },
                         items: self.flattenItems(items),
                         discounts: cart_discounts,
@@ -1701,9 +1767,9 @@
                 };
             } else {
                 if (breadEnv === "sandbox") {
-                    script_url = "https://api-preview.rbc.breadpayments.com/";
+                    script_url = "https://connect-preview.rbc.breadpayments.com/sdk.js";
                 } else {
-                    script_url = "https://api.rbcpayplan.com/";
+                    script_url = "https://connect.rbcpayplan.com/sdk.js";
                 };
             };
 
@@ -1768,6 +1834,7 @@
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                 sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                 sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
+                sessionStorage.setItem("bread-tenant", settings.bread_tenant)
                 initPage();
             })
         }
