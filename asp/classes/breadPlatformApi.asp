@@ -18,18 +18,10 @@ Class BreadPlatformAPI
 	' Initialize Class
 	Private Sub Class_Initialize
 	
-		If dct_settings("bread_tenant") = "ADS" Then
-			If dct_settings("bread_env") = "production" Then
-				api_baseurl = "https://api.platform.breadpayments.com"
-			Else
-				api_baseurl = "https://api-preview.platform.breadpayments.com"
-			End If
+		If dct_settings("bread_env") = "production" Then
+			api_baseurl = "https://api.platform.breadpayments.com"
 		Else
-			If dct_settings("bread_env") = "production" Then
-				api_baseurl = "https://api.rbcpayplan.com"
-			Else
-				api_baseurl = "https://api-preview.rbc.breadpayments.com"
-			End If
+			api_baseurl = "https://api-preview.platform.breadpayments.com"
 		End If
 		
 		Set jsonHelper = New VbsJson

@@ -13,14 +13,6 @@ breadRefreshButton.onclick = () => {
     }).then(settings => {
 
         const breadPaymentMethodID = settings.bread_payment_method_id;
-        const breadTenant = settings.bread_tenant;
-
-        let currency;
-        if (breadTenant === "ADS") {
-            currency = "USD"
-        } else {
-            currency = "CAD"
-        };
 
         $.ajax({
             method: 'get',
@@ -83,7 +75,7 @@ breadRefreshButton.onclick = () => {
                                 order_status: order["OrderStatus"]["#text"],
                                 tx_id: order["Custom_Field_Custom5"]["#text"],
                                 externalID: order["OrderID"]["#text"],
-                                amount: JSON.stringify({ currency: currency, value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
+                                amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
                             }
 
                             $.ajax({
@@ -102,7 +94,7 @@ breadRefreshButton.onclick = () => {
                             order_status: orders["OrderStatus"]["#text"],
                             tx_id: orders["Custom_Field_Custom5"]["#text"],
                             order_id: orders["OrderID"]["#text"],
-                            amount: JSON.stringify({ currency: currency, value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
+                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
                         }
 
                         $.ajax({

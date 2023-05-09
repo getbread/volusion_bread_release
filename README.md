@@ -42,9 +42,6 @@ password.
  - Production: The production environment is used for real transactions and requires live api
    credentials.
 
-**Bread Tenant**
- - US merchants should select ADS. Canadian merchants should select RBC
-
 **Bread Version**
  - After May 2023, all merchants should be using the "platform" setting here
 

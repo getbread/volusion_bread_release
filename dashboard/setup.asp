@@ -47,20 +47,6 @@
 		</div>
 	</div>
 	<div class="form-group">
-		<label for="bread_tenant" class="col-md-2 control-label">Bread Tenant</label>
-		<div class="col-md-6">
-			<select id="bread_tenant" name="bread_tenant" class="form-control">
-				<% If dct_setup("bread_tenant") = "RBC" Then %>
-				<option value="ADS">ADS</option>
-				<option value="RBC" selected>RBC</option>
-				<% Else %>
-				<option value="ADS" selected>ADS</option>
-				<option value="RBC">RBC</option>
-				<% End If %>
-			</select>
-		</div>
-	</div>
-	<div class="form-group">
 		<label for="bread_version" class="col-md-2 control-label">Bread Version</label>
 		<div class="col-md-6">
 			<select id="bread_version" name="bread_version" class="form-control">
