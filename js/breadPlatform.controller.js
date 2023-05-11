@@ -877,6 +877,10 @@
             makeBread: function (integrationKey) {
                 var self = this;
 
+                // Inserts the bread button underneath the Product
+                var button = $(this.buttonHtml);
+                this.insertButton(button);
+
                 /** 
                  * Bread uses [placements] to fill in information about the product and apply it to the pre-qualification button.
                  * In order to get that information, we run getCheckoutParams, which returns information about that product.
@@ -885,63 +889,70 @@
                  * We then add that info to the placement, which is pushed to bread via registerPlacements() to generate buttons with applicable prices.
                  */
 
-                const placements = [];
-                const item = self.getCheckoutParams();
-                const productArray = item.items;
-                const price = productArray[0].price;
-                const product_code = productArray[0].sku;
+                const refreshBread = function () {
 
-                // Check that the price is between min and max set prices
-                if (self.minMaxCheck(price)) {
-                    // Check if products are filtered out of Bread availability
-                    if (self.skuCheck(product_code)) {
-                        // Inserts the bread button underneath the Product
-                        var button = $(this.buttonHtml);
-                        this.insertButton(button);
+                    const qtySelector = $('input[name*="QTY"]');
+                    let qty = qtySelector[0].value;
 
-                        placements.push({
-                            financingType: "installment",
-                            domID: "bread-checkout-btn",
-                            allowCheckout: false,
-                            order: {
-                                items: [],
-                                subTotal: {
-                                    value: price,
-                                    currency: "USD",
-                                },
-                                totalDiscounts: {
-                                    value: 0,
-                                    currency: "USD",
-                                },
-                                totalShipping: {
-                                    value: 0,
-                                    currency: "USD",
-                                },
-                                totalTax: {
-                                    value: 0,
-                                    currency: "USD",
-                                },
-                                totalPrice: {
-                                    value: price,
-                                    currency: "USD",
-                                },
-                            }
-                        });
+                    let placements = [];
+                    let item = self.getCheckoutParams();
+                    let productArray = item.items;
+                    let price = productArray[0].price * qty;
+                    let product_code = productArray[0].sku;
 
-                        window.BreadPayments.setup({
-                            integrationKey: integrationKey
-                        });
+                    // Check that the price is between min and max set prices
+                    if (self.minMaxCheck(price)) {
+                        // Check if products are filtered out of Bread availability
+                        if (self.skuCheck(product_code)) {
 
-                        window.BreadPayments.registerPlacements(placements);
+                            placements.push({
+                                financingType: "installment",
+                                domID: "bread-checkout-btn",
+                                allowCheckout: false,
+                                order: {
+                                    items: [],
+                                    subTotal: {
+                                        value: price,
+                                        currency: "USD",
+                                    },
+                                    totalDiscounts: {
+                                        value: 0,
+                                        currency: "USD",
+                                    },
+                                    totalShipping: {
+                                        value: 0,
+                                        currency: "USD",
+                                    },
+                                    totalTax: {
+                                        value: 0,
+                                        currency: "USD",
+                                    },
+                                    totalPrice: {
+                                        value: price,
+                                        currency: "USD",
+                                    },
+                                }
+                            });
 
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                        window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                        window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                            window.BreadPayments.setup({
+                                integrationKey: integrationKey
+                            });
 
-                        window.BreadPayments.__internal__.init();
+                            window.BreadPayments.registerPlacements(placements);
 
+                            window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                            window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                            window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+
+                            window.BreadPayments.__internal__.init();
+
+                        };
                     };
                 };
+
+                $('button[class*="vol-cartqty"]').on("click", function () { refreshBread() });
+                $('select[name*="SELECT"]').change(function () { refreshBread() });
+                refreshBread();
             },
 
             /**
@@ -951,8 +962,10 @@
              * @return	void
              */
             insertButton: function (button) {
-                var table = $('[class$=productdetail-options]').find('table').eq(0);
-                button.insertAfter(table.find('tr').eq(0));
+
+                const addToCartButton = $('#btn_addtocart')
+                button.insertAfter(addToCartButton)
+
             },
 
             /**
@@ -1055,7 +1068,6 @@
                 var product = page.find('table[id$="product-parent"]');
                 return parseInt(product.find('input[class$="cartqty"]').val() || 1);
             }
-
         });
 
     /**
@@ -1100,7 +1112,7 @@
                     let excluded_products = [];
 
                     productArray.forEach(item => {
-                        price += item.price;
+                        price += item.price * item.quantity;
                         const product_code = item.sku;
                         const product_name = item.name;
 

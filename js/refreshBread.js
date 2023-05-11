@@ -93,7 +93,7 @@ breadRefreshButton.onclick = () => {
                         let data = {
                             order_status: orders["OrderStatus"]["#text"],
                             tx_id: orders["Custom_Field_Custom5"]["#text"],
-                            order_id: orders["OrderID"]["#text"],
+                            externalID: orders["OrderID"]["#text"],
                             amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
                         }
 
