@@ -23,13 +23,22 @@ If order_status = "Cancelled" Then
 
 Set cancel = breadPlatform.cancelTransaction( tx_id, amount )
 
+Response.Write "Order Updated"
+Response.End
+
 Elseif order_status = "Returned" Then
 
 Set refund = breadPlatform.refundTransaction( tx_id, amount )
 
+Response.Write "Order Updated"
+Response.End
+
 Elseif order_status = "Pending Shipment" Then
 
 Set settle = breadPlatform.settleTransaction( tx_id, amount )
+
+Response.Write "Order Updated"
+Response.End
 
 End If
 

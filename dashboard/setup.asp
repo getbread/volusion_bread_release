@@ -31,7 +31,7 @@
 			</label>
 		</div>
 	</div>
-	<h3>Bread Financial Integration</h3>
+	<h3>Bread Pay Integration</h3>
 	<div class="form-group">
 		<label for="bread_env" class="col-md-2 control-label">Environment</label>
 		<div class="col-md-6">
@@ -86,47 +86,9 @@
 				<input type="text" id="bread_platform_auth" name="bread_platform_auth" class="form-control" value="<% = dct_setup("bread_platform_auth") %>">
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="col-md-2 control-label">Disable Product Page Button</label>
-			<div class="col-md-6 checkbox">
-				<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
-					<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
-					If this box is checked, the Bread button will not appear on individual product description pages
-				</label>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-md-2 control-label">Disable Cart Page Button</label>
-			<div class="col-md-6 checkbox">
-				<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
-					<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
-					If this box is checked, the Bread button will not appear on the cart page
-				</label>
-			</div>
-		</div>
 	</div>
-	<div class="classic-api-info">
-		<h4>Bread Classic</h4>
-		<div class="form-group">
-			<label for="bread_classic_api_key" class="col-md-2 control-label">Bread Classic API Key</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_api_key" name="bread_classic_api_key" class="form-control" value="<% = dct_setup("bread_classic_api_key") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_classic_api_secret" class="col-md-2 control-label">Bread Classic API Secret</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_api_secret" name="bread_classic_api_secret" class="form-control" value="<% = dct_setup("bread_classic_api_secret") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_classic_auth" class="col-md-2 control-label">Bread Classic Authorization</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_auth" name="bread_classic_auth" class="form-control" value="<% = dct_setup("bread_classic_auth") %>">
-			</div>
-		</div>
-	</div>
-	<h4>Bread Payment Settings</h4>
+	
+	<h4>Bread Pay Settings</h4>
 	<div class="form-group">
 		<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method Id</label>
 		<div class="col-md-6">
@@ -158,20 +120,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="bread_css" class="col-md-2 control-label">Bread Container CSS</label>
-		<div class="col-md-6">
-			<textarea id="bread_css" name="bread_css" class="form-control" rows="6"><% = Load_Custom_CSS() %></textarea>
-			<p>This css will be inserted onto the page and can be used to style the bread button container element in your volusion store.</p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="bread_button_css" class="col-md-2 control-label">Custom Button CSS</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_button_css" name="bread_button_css" class="form-control" value="<% = dct_setup("bread_button_css") %>">
-			<p>Any CSS entered here will be used to style the bread button itself. Please minify your css using a service such as <a href="https://cssminifier.com/">CSS Minifier</a>.</p>
-		</div>
-	</div>
+	
 	<div class="form-group">
 		<label for="bread_product_min" class="col-md-2 control-label">Minimum Product Value</label>
 		<div class="col-md-6">
@@ -319,6 +268,60 @@
 			</label>
 		</div>
 	</div>	
+	<div class="classic-api-info">
+		<h4>Bread Classic</h4>
+		<p>The settings below apply to the Classic version of Bread Pay, discontinued in May 2023. If you are not using Bread Classic, you may leave the fields between here and the Save button blanks. If you're not sure what version you're using, talk to the Bread customer support team.</p>
+		<div class="form-group">
+			<label for="bread_classic_api_key" class="col-md-2 control-label">Bread Classic API Key</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_api_key" name="bread_classic_api_key" class="form-control" value="<% = dct_setup("bread_classic_api_key") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_classic_api_secret" class="col-md-2 control-label">Bread Classic API Secret</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_api_secret" name="bread_classic_api_secret" class="form-control" value="<% = dct_setup("bread_classic_api_secret") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_classic_auth" class="col-md-2 control-label">Bread Classic Authorization</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_classic_auth" name="bread_classic_auth" class="form-control" value="<% = dct_setup("bread_classic_auth") %>">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label">Disable Product Page Button</label>
+			<div class="col-md-6 checkbox">
+				<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+					<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
+					Classic Only. If this box is checked, the Bread button will not appear on individual product description pages
+				</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-2 control-label">Disable Cart Page Button</label>
+			<div class="col-md-6 checkbox">
+				<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+					<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
+					Classic Only. If this box is checked, the Bread button will not appear on the cart page
+				</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_css" class="col-md-2 control-label">Bread Container CSS</label>
+			<div class="col-md-6">
+			<textarea id="bread_css" name="bread_css" class="form-control" rows="6"><% = Load_Custom_CSS() %></textarea>
+			<p>This css will be inserted onto the page and can be used to style the bread button container element in your volusion store.</p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="bread_button_css" class="col-md-2 control-label">Custom Button CSS</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_button_css" name="bread_button_css" class="form-control" value="<% = dct_setup("bread_button_css") %>">
+				<p>Any CSS entered here will be used to style the bread button itself. Please minify your css using a service such as <a href="https://cssminifier.com/">CSS Minifier</a>.</p>
+			</div>
+		</div>
+	</div>
 	<div class="col-md-4 col-md-offset-3">
 		<button type="submit" class="btn btn-default btn-block">Save</button>
 	</div>

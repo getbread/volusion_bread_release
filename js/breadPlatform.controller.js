@@ -1320,7 +1320,7 @@
                     shippingPriceArray.shift();
                     shippingPriceArray = shippingPriceArray.reverse();
                     const shippingPriceString = shippingPriceArray.join("");
-                    const totalShipping = Number(shippingPriceString.replace(/[^0-9.-]+/g, "")) * 100;
+                    const totalShipping = Math.round(Number(shippingPriceString.replace(/[^0-9.-]+/g, "")) * 100);
 
                     shippingChoiceArray = shippingChoiceArray.reverse();
                     const shippingName = shippingChoiceArray.join("");
@@ -1366,7 +1366,7 @@
                         const totalShipping = shippingChoice.shippingCost
 
                         const totalTaxString = $("#TotalsTax1TD").text();
-                        const totalTax = Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100;
+                        const totalTax = Math.round(Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100);
                         let excluded_products = [];
 
                         let subTotal = 0;

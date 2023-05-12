@@ -86,6 +86,7 @@ If Not transaction("error") Then
 			new_order.Add "BillingPhoneNumber", transaction("contactInfo")("phone")
 			new_order.Add "PaymentMethodID", dct_settings("bread_payment_method_id")
 			new_order.Add "SalesTax1", Round( transaction("taxAmount")("value") / 100, 2 )
+			new_order.Add "SalesTaxRate1", transaction("taxAmount")("value") / (transaction("adjustedAmount")("value") - transaction("taxAmount")("value") - transaction("shippingAmount")("value"))
 			new_order.Add "PaymentAmount", Round( transaction("adjustedAmount")("value") / 100, 2 )
 			new_order.Add "Total_Payment_Authorized", Round( transaction("totalAmount")("value") / 100, 2 )
 			new_order.Add "ShipAddress1", transaction("shippingContact")("address1")
