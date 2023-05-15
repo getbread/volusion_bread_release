@@ -673,7 +673,7 @@
             const breadMin = Math.round(Number(sessionStorage.getItem("bread-product-min")) * 100);
             const breadMax = Math.round(Number(sessionStorage.getItem("bread-product-max")) * 100);
 
-            if ((breadMax === 0 && price > breadMin) || (price > breadMin && price < breadMax)) {
+            if ((breadMax === 0 && price > breadMin) || (price >= breadMin && price <= breadMax)) {
                 return true;
             }
             return false;
