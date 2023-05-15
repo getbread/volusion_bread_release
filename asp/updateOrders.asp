@@ -33,7 +33,7 @@ Set refund = breadPlatform.refundTransaction( tx_id, amount )
 Response.Write "Order Updated"
 Response.End
 
-Elseif order_status = "Pending Shipment" Then
+Elseif order_status = "Shipped" Then
 
 Set settle = breadPlatform.settleTransaction( tx_id, amount )
 
