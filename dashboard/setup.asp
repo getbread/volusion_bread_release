@@ -164,11 +164,38 @@
 		</div>
 	</div>
 	<div class="form-group">
+		<label class="col-md-2 control-label">Disable Product Page Button</label>
+		<div class="col-md-6 checkbox">
+			<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+				<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
+				If this box is checked, the Bread button will not appear on individual product description pages
+			</label>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-md-2 control-label">Disable Cart Page Button</label>
+		<div class="col-md-6 checkbox">
+			<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+				<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
+				If this box is checked, the Bread button will not appear on the cart page
+			</label>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-md-2 control-label">Disable Category Page Button</label>
+		<div class="col-md-6 checkbox">
+			<label for="bread_disable_category_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+				<input type="checkbox" id="bread_disable_category_button" name="bread_disable_category_button" value="on"<% If dct_setup("bread_disable_category_button") = "on" Then %> checked="checked"<% End If %> />
+				If this box is checked, the Bread button will not appear on category pages
+			</label>
+		</div>
+	</div>
+	<div class="form-group">
 		<label class="col-md-2 control-label">Disable Product Page Checkout</label>
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_product_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_product_checkout" name="bread_disable_product_checkout" value="on"<% If dct_setup("bread_disable_product_checkout") = "on" Then %> checked="checked"<% End If %> />
-				Do not allow users to complete single item purchases directly from the product page. Instead, the bread button will only show available financing rates and the user must add the product to their cart to begin the checkout.
+				Classic Only. Do not allow users to complete single item purchases directly from the product page. Instead, the bread button will only show available financing rates and the user must add the product to their cart to begin the checkout.
 			</label>
 		</div>
 	</div>
@@ -177,7 +204,7 @@
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_cart_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_cart_checkout" name="bread_disable_cart_checkout" value="on"<% If dct_setup("bread_disable_cart_checkout") = "on" Then %> checked="checked"<% End If %> />
-				Do not allow users to complete a bread checkout from the cart page. Instead, the bread button will only show available financing rates and the user must continue to the actual checkout page to complete a bread checkout.
+				Classic Only. Do not allow users to complete a bread checkout from the cart page. Instead, the bread button will only show available financing rates and the user must continue to the actual checkout page to complete a bread checkout.
 			</label>
 		</div>
 	</div>
@@ -287,24 +314,6 @@
 			<label for="bread_classic_auth" class="col-md-2 control-label">Bread Classic Authorization</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_classic_auth" name="bread_classic_auth" class="form-control" value="<% = dct_setup("bread_classic_auth") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-md-2 control-label">Disable Product Page Button</label>
-			<div class="col-md-6 checkbox">
-				<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
-					<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
-					Classic Only. If this box is checked, the Bread button will not appear on individual product description pages
-				</label>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-md-2 control-label">Disable Cart Page Button</label>
-			<div class="col-md-6 checkbox">
-				<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
-					<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
-					Classic Only. If this box is checked, the Bread button will not appear on the cart page
-				</label>
 			</div>
 		</div>
 		<div class="form-group">

@@ -685,7 +685,7 @@
             const sku_list_string = sessionStorage.getItem("bread_sku_filter_list");
             const sku_filter_option = sessionStorage.getItem("bread_enable_sku_filter");
             let product_list;
-            if (sku_list_string === "") {
+            if (sku_list_string === "" && sku_filter_option != "Off") {
                 console.log("Bread Settings Error: Include/Exclude option is turned on, but no product codes have been specified");
                 return true;
             } else {
@@ -1740,6 +1740,8 @@
                         console.log("Bread button disabled on this page")
                     } else if (page.type === "cart" && sessionStorage.getItem("bread-disable-cart-button") === "on") {
                         console.log("Bread button disabled on this page");
+                    } else if (page.type === "category" && sessionStorage.getItem("bread-disable-category-button") === "on") {
+                        console.log("Bread button disabled on this page");
                     } else {
                         page.controller.makeBread(integrationKey);
                     };
@@ -1767,6 +1769,7 @@
                     sessionStorage.setItem("integration-key", settings.integration_key);
                     sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
                     sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
+                    sessionStorage.setItem("bread-disable-category-button", settings.disable_category_button);
                     sessionStorage.setItem("bread-product-min", settings.bread_product_min);
                     sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                     sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
@@ -1782,6 +1785,7 @@
             $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
                 sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
                 sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
+                sessionStorage.setItem("bread-disable-category-button", settings.disable_category_button);
                 sessionStorage.setItem("bread-product-min", settings.bread_product_min);
                 sessionStorage.setItem("bread-product-max", settings.bread_product_max);
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
