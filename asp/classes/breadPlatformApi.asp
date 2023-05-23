@@ -1,11 +1,9 @@
 <%
 
-' Bread Classic API Wrapper Class
+' Bread Platform/2.0 API Wrapper Class
 '
-' @see: https://payments.breadfinancial.com/documentation/
+' @see: https://platform-docs.breadpayments.com/bread-developers/reference/foundations-introduction
 ' @example:
-'
-' 	Dim bread : Set bread = (New BreadPlatformAPI)( "email@domain.com", "accessToken" )
 '
 Class BreadPlatformAPI
 

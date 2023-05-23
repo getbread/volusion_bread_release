@@ -1,6 +1,5 @@
 <!--#include file="load_settings.inc"-->
 <!--#include file="./classes/jsonHelper.asp"-->
-<!--#include file="./classes/breadClassicApi.asp"-->
 <!--#include file="./classes/breadPlatformApi.asp"-->
 <!--#include file="./classes/volusionApi.asp"-->
 <!--#include file="./classes/SMTP.asp"-->
@@ -15,7 +14,6 @@ Dim shippingAddress : shippingAddress = Request.Form("shippingAddress")
 Dim contactInfo : contactInfo = Request.Form("contactInfo")
 Dim purchaseItems : purchaseItems = Request.Form("items")
 Dim shippingID : shippingID = request.Form("shippingID")
-Dim bread : Set bread = (New BreadClassicApi)( dct_settings("bread_classic_api_key"), dct_settings("bread_classic_api_secret") )
 Dim breadPlatform : Set breadPlatform = (New BreadPlatformApi)( dct_settings("bread_platform_api_key"), dct_settings("bread_platform_api_secret") )
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
 Dim response_json
@@ -61,7 +59,7 @@ If Not transaction("error") Then
 			new_customer.Add "State", transaction("billingContact")("region")
 			new_customer.Add "PostalCode", transaction("billingContact")("postalCode")
 			new_customer.Add "PhoneNumber", transaction("contactInfo")("phone")
-			new_customer.Add "RestrictedFreeShipping", "T" 'TODO: This field is required and can only be a single letter string, but it doesn't show up on customer profiles and I can't see how it effects anything.
+			new_customer.Add "RestrictedFreeShipping", "T"
 
 			
 			Set customer = volusion.insert( "Customers", Array( new_customer ) )

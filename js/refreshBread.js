@@ -1,3 +1,19 @@
+/**
+ * 
+ * This operator is called when a Volusion merchant presses the "Refresh Bread"
+ * button on the Bread Setings Dashboard. 
+ * 
+ * At time of writing, Volusion is not able to send automated calls outward from its API, 
+ * and it is not able to use webhooks or any external system to automate data transfers.
+ * The only way to get data from the Volusion API is to send a request manually.
+ * 
+ * That's why we need the "Refresh Bread" button to get data from Volusion. It's not ideal,
+ * but it's the only way to somewhat automate updates in the merchant portal based on what's
+ * happening in Volusion.
+ * 
+ */
+
+
 const script = document.createElement('script');
 script.src = 'https://code.jquery.com/jquery-3.6.4.min.js';
 document.getElementsByTagName('head')[0].appendChild(script);
@@ -6,7 +22,7 @@ const breadRefreshButton = document.getElementById("bread_refresh")
 
 breadRefreshButton.onclick = () => {
 
-    window.BREAD_ORDER_PROCESSING_URL = "/v/bread/asp/updateOrder.asp"
+    window.BREAD_ORDER_PROCESSING_URL = "/v/bread/asp/getOrders.asp"
 
     $.getJSON('/v/bread/asp/breadSettings.asp', () => {
 
@@ -14,11 +30,24 @@ breadRefreshButton.onclick = () => {
 
         const breadPaymentMethodID = settings.bread_payment_method_id;
 
+        /**
+         * 
+         * Volusion's API sends data in XML. The way Volusion's API works is that it tracks any new 
+         * data that hasn't already been shared in an API request, and when you send a get request,
+         * it only sends those new items. This is great for when we only want to update items that have been changed,
+         * but causes a problem because if the API hits an error after that data has been accessed, it won't send those same orders again.
+         * See the README section on resetting the Volusion API for how to fix this.
+         * 
+         * The ajax call below gets all new or updated orders and returns them in XML format.
+         */
+
         $.ajax({
             method: 'get',
             dataType: 'xml',
             url: BREAD_ORDER_PROCESSING_URL,
         }).then(xmlResponse => {
+
+            // Reformat the XML response into JSON so Bread can work with it.
 
             function xmlToJson(xml) {
                 // Create the return object
@@ -67,45 +96,42 @@ breadRefreshButton.onclick = () => {
             if (orders) {
                 if (orders.constructor === Array) {
                     orders.forEach(order => {
-
-                        //   This check means that the way for this to work will have 
-                        //   to be through a user selecting the Bread payment type, or else it won't be updatable
-                        if (order["PaymentMethodID"]["#text"] === breadPaymentMethodID) {
-                            let data = {
-                                order_status: order["OrderStatus"]["#text"],
-                                tx_id: order["Custom_Field_Custom5"]["#text"],
-                                externalID: order["OrderID"]["#text"],
-                                amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
-                            }
-
-                            $.ajax({
-                                method: 'post',
-                                dataType: 'json',
-                                url: "/v/bread/asp/updateOrders.asp",
-                                data: data
-                            }).then(response => {
-                                alert("Bread updated")
-                            });
-                        };
-                    });
-                } else {
-                    if (orders["PaymentMethodID"]["#text"] === breadPaymentMethodID) {
                         let data = {
-                            order_status: orders["OrderStatus"]["#text"],
-                            tx_id: orders["Custom_Field_Custom5"]["#text"],
-                            externalID: orders["OrderID"]["#text"],
-                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
+                            order_status: order["OrderStatus"]["#text"],
+                            tx_id: order["Custom_Field_Custom5"]["#text"],
+                            externalID: order["OrderID"]["#text"],
+                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
                         }
 
+                        // This ajax call sends the new and updated orders to Bread
                         $.ajax({
                             method: 'post',
                             dataType: 'json',
                             url: "/v/bread/asp/updateOrders.asp",
                             data: data
                         }).then(response => {
+                            // ASP does not always send a response upon successful completion. 
+                            // If you do not see this alert, it does not necessarily mean the update did not go through.
+                            // Click again and you should see "All Bread orders are up to date"
                             alert("Bread updated")
                         });
+                    });
+                } else {
+                    let data = {
+                        order_status: orders["OrderStatus"]["#text"],
+                        tx_id: orders["Custom_Field_Custom5"]["#text"],
+                        externalID: orders["OrderID"]["#text"],
+                        amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
                     }
+
+                    $.ajax({
+                        method: 'post',
+                        dataType: 'json',
+                        url: "/v/bread/asp/updateOrders.asp",
+                        data: data
+                    }).then(response => {
+                        alert("Bread updated")
+                    });
                 };
             } else {
                 alert("All Bread orders are up to date");

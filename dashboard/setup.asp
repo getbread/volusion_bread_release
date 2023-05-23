@@ -46,42 +46,28 @@
 			</select>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="bread_version" class="col-md-2 control-label">Bread Version</label>
-		<div class="col-md-6">
-			<select id="bread_version" name="bread_version" class="form-control">
-				<% If dct_setup("bread_version") = "classic" Then %>
-				<option value="platform">platform</option>
-				<option value="classic" selected>classic</option>
-				<% Else %>
-				<option value="platform" selected>platform</option>
-				<option value="classic">classic</option>
-				<% End If %>
-			</select>
-		</div>
-	</div>
 	<div class="platform-api-info">
-		<h4>Bread 2.0</h4>
+		<h4>Connect to Bread Pay</h4>
 		<div class="form-group">
-			<label for="bread_platform_api_key" class="col-md-2 control-label">Bread 2.0 API Key</label>
+			<label for="bread_platform_api_key" class="col-md-2 control-label">Bread Pay API Key</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_api_key" name="bread_platform_api_key" class="form-control" value="<% = dct_setup("bread_platform_api_key") %>">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="bread_platform_api_secret" class="col-md-2 control-label">Bread 2.0 API Secret</label>
+			<label for="bread_platform_api_secret" class="col-md-2 control-label">Bread Pay API Secret</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_api_secret" name="bread_platform_api_secret" class="form-control" value="<% = dct_setup("bread_platform_api_secret") %>">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="bread_platform_integration_key" class="col-md-2 control-label">Bread 2.0 Integration Key</label>
+			<label for="bread_platform_integration_key" class="col-md-2 control-label">Bread Pay Integration Key</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_integration_key" name="bread_platform_integration_key" class="form-control" value="<% = dct_setup("bread_platform_integration_key") %>">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="bread_platform_auth" class="col-md-2 control-label">Bread 2.0 Authorization</label>
+			<label for="bread_platform_auth" class="col-md-2 control-label">Bread Pay Authorization</label>
 			<div class="col-md-6">
 				<input type="text" id="bread_platform_auth" name="bread_platform_auth" class="form-control" value="<% = dct_setup("bread_platform_auth") %>">
 			</div>
@@ -90,7 +76,7 @@
 	
 	<h4>Bread Pay Settings</h4>
 	<div class="form-group">
-		<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method Id</label>
+		<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method ID</label>
 		<div class="col-md-6">
 			<input type="text" id="bread_payment_method_id" name="bread_payment_method_id" class="form-control" value="<% = dct_setup("bread_payment_method_id") %>">
 		</div>
@@ -165,7 +151,7 @@
 		<div class="col-md-6 checkbox">
 			<label for="bread_embedded_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_embedded_checkout" name="bread_embedded_checkout" value="on"<% If dct_setup("bread_embedded_checkout") = "on" Then %> checked="checked"<% End If %> />
-				Embed Bread Checkout Form directly in page rather than via a pop-up modal (default: off)
+				Embed Bread Pay Checkout Form directly in page rather than via a pop-up modal (default: off)
 			</label>
 		</div>
 	</div>
@@ -193,24 +179,6 @@
 			<label for="bread_disable_category_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_category_button" name="bread_disable_category_button" value="on"<% If dct_setup("bread_disable_category_button") = "on" Then %> checked="checked"<% End If %> />
 				If this box is checked, the Bread button will not appear on category pages
-			</label>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-md-2 control-label">Disable Product Page Checkout</label>
-		<div class="col-md-6 checkbox">
-			<label for="bread_disable_product_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
-				<input type="checkbox" id="bread_disable_product_checkout" name="bread_disable_product_checkout" value="on"<% If dct_setup("bread_disable_product_checkout") = "on" Then %> checked="checked"<% End If %> />
-				Classic Only. Do not allow users to complete single item purchases directly from the product page. Instead, the bread button will only show available financing rates and the user must add the product to their cart to begin the checkout.
-			</label>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-md-2 control-label">Disable Cart Page Checkout</label>
-		<div class="col-md-6 checkbox">
-			<label for="bread_disable_cart_checkout" class="control-label" style="margin-bottom: 15px; text-align:left;">
-				<input type="checkbox" id="bread_disable_cart_checkout" name="bread_disable_cart_checkout" value="on"<% If dct_setup("bread_disable_cart_checkout") = "on" Then %> checked="checked"<% End If %> />
-				Classic Only. Do not allow users to complete a bread checkout from the cart page. Instead, the bread button will only show available financing rates and the user must continue to the actual checkout page to complete a bread checkout.
 			</label>
 		</div>
 	</div>
@@ -286,54 +254,6 @@
 			</label>
 			<div class="alert alert-info">
 				Add "?bread_test" to the end of a site url to cause the bread button to load.
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-md-2 control-label">
-		Line Items Sequencing Tweak
-		</label>
-		<div class="col-md-6 checkbox">
-			<label for="ajax_line_items_mode" class="control-label" style="margin-bottom: 15px; text-align:left;">
-				<input type="checkbox" id="ajax_line_items_mode" name="ajax_line_items_mode" value="on"<% If dct_setup("ajax_line_items_mode") = "on" Then %> checked="checked"<% End If %> />
-				Enable this option to add line items to volusion orders in the sequence they appear in the cart. This uses the line items obtained from the web browser instead of from
-				the transaction record on the bread backend. (default: off)
-			</label>
-		</div>
-	</div>	
-	<div class="classic-api-info">
-		<h4>Bread Classic</h4>
-		<p>The settings below apply to the Classic version of Bread Pay, discontinued in May 2023. If you are not using Bread Classic, you may leave the fields between here and the Save button blanks. If you're not sure what version you're using, talk to the Bread customer support team.</p>
-		<div class="form-group">
-			<label for="bread_classic_api_key" class="col-md-2 control-label">Bread Classic API Key</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_api_key" name="bread_classic_api_key" class="form-control" value="<% = dct_setup("bread_classic_api_key") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_classic_api_secret" class="col-md-2 control-label">Bread Classic API Secret</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_api_secret" name="bread_classic_api_secret" class="form-control" value="<% = dct_setup("bread_classic_api_secret") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_classic_auth" class="col-md-2 control-label">Bread Classic Authorization</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_classic_auth" name="bread_classic_auth" class="form-control" value="<% = dct_setup("bread_classic_auth") %>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_css" class="col-md-2 control-label">Bread Container CSS</label>
-			<div class="col-md-6">
-			<textarea id="bread_css" name="bread_css" class="form-control" rows="6"><% = Load_Custom_CSS() %></textarea>
-			<p>This css will be inserted onto the page and can be used to style the bread button container element in your volusion store.</p>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="bread_button_css" class="col-md-2 control-label">Custom Button CSS</label>
-			<div class="col-md-6">
-				<input type="text" id="bread_button_css" name="bread_button_css" class="form-control" value="<% = dct_setup("bread_button_css") %>">
-				<p>Any CSS entered here will be used to style the bread button itself. Please minify your css using a service such as <a href="https://cssminifier.com/">CSS Minifier</a>.</p>
 			</div>
 		</div>
 	</div>

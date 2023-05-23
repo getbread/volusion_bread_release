@@ -11,9 +11,6 @@ bread_platform_api_key|
 bread_platform_api_secret|
 bread_platform_integration_key|
 bread_platform_auth|
-bread_classic_api_key|
-bread_classic_api_secret|
-bread_classic_auth|
 bread_product_min|0
 bread_product_max|0
 bread_enable_sku_filter|Off
@@ -22,12 +19,9 @@ bread_embedded_checkout|
 bread_payment_method_id|
 bread_payment_method_name|
 bread_payment_settle|
-bread_disable_product_checkout|
-bread_disable_cart_checkout|
 bread_disable_product_button|
 bread_disable_cart_button|
 bread_disable_category_button|
 debug_mode|
 disable_autoload|
-ajax_line_items_mode|
 completed_order_status|New

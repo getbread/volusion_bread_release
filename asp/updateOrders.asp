@@ -17,7 +17,11 @@ If tx_id = "" Then
 	Response.End
 End If
 
+' Always send an order ID number to Bread
 Set update = breadPlatform.updateTransaction( tx_id, externalID )
+
+' Determine the new status of the order and
+' update the Bread Merchant Portal accordingly
 
 If order_status = "Cancelled" Then
 

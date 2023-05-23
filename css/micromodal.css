@@ -5,7 +5,7 @@
 .bmodal {
     font-family: -apple-system,BlinkMacSystemFont,avenir next,avenir,helvetica neue,helvetica,ubuntu,roboto,noto,segoe ui,arial,sans-serif;
   }
-  
+
   .bmodal__overlay {
     position: fixed;
     top: 0;
@@ -17,7 +17,7 @@
     justify-content: center;
     align-items: center;
   }
-  
+
   .bmodal__container {
     background-color: #fff;
     padding: 30px;
@@ -27,13 +27,13 @@
     overflow-y: auto;
     box-sizing: border-box;
   }
-  
+
   .bmodal__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .bmodal__title {
     margin-top: 0;
     margin-bottom: 0;
@@ -42,21 +42,21 @@
     color: #00449e;
     box-sizing: border-box;
   }
-  
+
   .bmodal__close {
     background: transparent;
     border: 0;
   }
-  
+
   .bmodal__header .bmodal__close:before { content: "\2715"; }
-  
+
   .bmodal__content {
     margin-top: 2rem;
     margin-bottom: 2rem;
     line-height: 1.5;
     color: rgba(0,0,0,.8);
   }
-  
+
   .bmodal__btn {
     font-size: .875rem;
     padding-left: 1rem;
@@ -84,19 +84,19 @@
     transition: transform .25s ease-out;
     transition: transform .25s ease-out,-webkit-transform .25s ease-out;
   }
-  
+
   .bmodal__btn:focus, .bmodal__btn:hover {
     -webkit-transform: scale(1.05);
     transform: scale(1.05);
   }
-  
+
   .bmodal__btn-primary {
     background-color: #00449e;
     color: #fff;
   }
-  
-  
-  
+
+
+
   /**************************\
     Demo Animation Style
   \**************************/
@@ -104,48 +104,48 @@
       from { opacity: 0; }
         to { opacity: 1; }
   }
-  
+
   @keyframes mmfadeOut {
       from { opacity: 1; }
         to { opacity: 0; }
   }
-  
+
   @keyframes mmslideIn {
     from { transform: translateY(15%); }
       to { transform: translateY(0); }
   }
-  
+
   @keyframes mmslideOut {
       from { transform: translateY(0); }
       to { transform: translateY(-10%); }
   }
-  
+
   .micromodal-slide {
     display: none;
   }
-  
+
   .micromodal-slide.is-open {
     display: block;
     position: absolute;
     z-index: 999;
   }
-  
+
   .micromodal-slide[aria-hidden="false"] .bmodal__overlay {
     animation: mmfadeIn .3s cubic-bezier(0.0, 0.0, 0.2, 1);
   }
-  
+
   .micromodal-slide[aria-hidden="false"] .bmodal__container {
     animation: mmslideIn .3s cubic-bezier(0, 0, .2, 1);
   }
-  
+
   .micromodal-slide[aria-hidden="true"] .bmodal__overlay {
     animation: mmfadeOut .3s cubic-bezier(0.0, 0.0, 0.2, 1);
   }
-  
+
   .micromodal-slide[aria-hidden="true"] .bmodal__container {
     animation: mmslideOut .3s cubic-bezier(0, 0, .2, 1);
   }
-  
+
   .micromodal-slide .bmodal__container,
   .micromodal-slide .bmodal__overlay {
     will-change: transform;
