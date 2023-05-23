@@ -86,7 +86,7 @@ If Not transaction("error") Then
 			new_order.Add "BillingPhoneNumber", transaction("contactInfo")("phone")
 			new_order.Add "PaymentMethodID", dct_settings("bread_payment_method_id")
 			new_order.Add "SalesTax1", Round( transaction("taxAmount")("value") / 100, 2 )
-			new_order.Add "SalesTaxRate1", transaction("taxAmount")("value") / (transaction("adjustedAmount")("value") - transaction("taxAmount")("value") - transaction("shippingAmount")("value"))
+			new_order.Add "SalesTaxRate1", Round( transaction("taxAmount")("value") / (transaction("adjustedAmount")("value") - transaction("taxAmount")("value") - transaction("shippingAmount")("value")), 5)
 			new_order.Add "PaymentAmount", Round( transaction("adjustedAmount")("value") / 100, 2 )
 			new_order.Add "Total_Payment_Authorized", Round( transaction("totalAmount")("value") / 100, 2 )
 			new_order.Add "ShipAddress1", transaction("shippingContact")("address1")
@@ -168,7 +168,7 @@ If Not transaction("error") Then
 					
 					order_line.Add "ProductCode", "Discount"
 					order_line.Add "ProductName", line("description")
-					order_line.Add "ProductPrice", Round( line("amount") / 100, 2 ) * -1
+					order_line.Add "ProductPrice", Round( line("amount")("value") / 100, 2 ) * -1
 					order_line.Add "Quantity", 1
 					
 					ReDim Preserve order_details( UBound( order_details ) + 1 )
@@ -180,7 +180,7 @@ If Not transaction("error") Then
 			new_order.Add "OrderDetails", order_details
 
 			If dct_settings("bread_payment_settle") = "on" Then
-				new_order.Add "Total_Payment_Received", Round( transaction("adjustedTotal") / 100, 2 )
+				new_order.Add "Total_Payment_Received", Round( transaction("adjustedAmount")("value") / 100, 2 )
 			End If
 			
 			Set order = volusion.insert( "Orders", Array( new_order ) )

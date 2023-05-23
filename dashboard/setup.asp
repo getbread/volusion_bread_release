@@ -96,6 +96,12 @@
 		</div>
 	</div>
 	<div class="form-group">
+		<label for="bread_payment_method_name" class="col-md-2 control-label">Payment Method Name</label>
+		<div class="col-md-6">
+			<input type="text" id="bread_payment_method_name" name="bread_payment_method_name" class="form-control" value="<% = dct_setup("bread_payment_method_name") %>">
+		</div>
+	</div>
+	<div class="form-group">
 		<label for="completed_order_status" class="col-md-2 control-label">Completed Order Status</label>
 		<div class="col-md-6">
 			<select id="completed_order_status" name="completed_order_status" class="form-control">

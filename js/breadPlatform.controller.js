@@ -901,7 +901,7 @@
                     let product_code = productArray[0].sku;
 
                     // Check that the price is between min and max set prices
-                    if (self.minMaxCheck(price)) {
+                    if (self.minMaxCheck(productArray[0].price)) {
                         // Check if products are filtered out of Bread availability
                         if (self.skuCheck(product_code)) {
 
@@ -1280,27 +1280,286 @@
     var CheckoutPageController = _class(BasePageController,
         {
             /**
-             * @var	string 		Button HTML
-             */
-            buttonHtml: '<div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px;"></div>',
-
-            /**
              * @var	boolean		Clear cart after checkout
              */
             clearCart: true,
 
-            /**
-             * Make bread buttons
-             *
-             * @return	void
-             */
             makeBread: function (integrationKey) {
                 var self = this;
 
-                var button = $(this.buttonHtml);
-                this.insertButton(button);
+                let breadInit = false;
+                let shippingChoice = "0";
+                const breadPaymentMethodName = sessionStorage.getItem("bread_payment_method_name");
+
+                $("#PaymentMethodTypeDisplay").change(function () {
+                    // Initialize the Bread Pay modal once the buyer chooses the Bread Pay option
+                    if ($("#PaymentMethodType").val() === breadPaymentMethodName) {
+                        // Hide the standard volusion button and replace it with the Bread Pay Option
+                        $("#btnSubmitOrder").hide();
+                        const breadButton = `<button class="w-100 btn btn-primary btn-lg" id="bread-checkout-btn" type="button" style="display: inline-block; margin: 5px auto;">${breadPaymentMethodName}</button></br>`;
+                        $("#btnSubmitOrder").before(breadButton);
+                        // Save the buyer's shipping choice to ensure they have chosen one before proceeding
+                        shippingChoice = document.getElementsByName("ShippingSpeedChoice")[0].value;;
+
+                        /**
+                        * Check that the Bread Pay Modal has not already been initialized.
+                        * This prevents a possible bug if the buyer switches back and forth between Bread Pay and other payment options.
+                        * It also prevents the buyer from opening the modal without a shipping option chosen.
+                        */
+                        if (!breadInit && shippingChoice !== "0" && shippingChoice) {
+                            /**
+                             * Connect to and initialize the Bread SDK
+                             */
+                            getBreadParams().then(breadParams => {
+                                if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
+                                    window.BreadPayments.setup({
+                                        integrationKey: integrationKey,
+                                        buyer: breadParams.buyer
+                                    });
+                                } else {
+                                    const td = $('#divbtnSubmitOrder');
+                                    td.before("<div id='checkout-container'></div>");
+
+                                    window.BreadPayments.setEmbedded(true);
+
+                                    window.BreadPayments.setup({
+                                        integrationKey: integrationKey,
+                                        buyer: breadParams.buyer,
+                                        containerID: "checkout-container"
+                                    });
+                                };
+
+                                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
+                                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
+                                    /**
+                                     * When the buyer completes the Bread Modal process,
+                                     * this function collects that data and sends it to the Bread Merchant Portal
+                                     * and the Volusion Admin Portal.
+                                     */
+
+                                    let breadData = breadParams.data;
+                                    breadData.tx_id = response.transactionID
+
+                                    // Add in any variable options selected for the product
+                                    $.each(breadParams.params.items, function (i, item) {
+                                        if (item.options) {
+                                            if (item.options._values) {
+                                                breadData[item.sku + '_options'] = item.options._values.join('');
+                                            }
+                                        }
+                                    });
+
+                                    // Send along the order items to process. The bread backend doesnt maintain
+                                    // the correct order of transaction line items, so we may need this.
+                                    breadData.items = breadParams.params.items.map(function (item) {
+                                        var line = Object.assign({}, item);
+                                        line.product = { name: line.name };
+                                        delete line.name;
+                                        return line;
+                                    });
+
+                                    breadData.items = JSON.stringify(breadData.items)
+
+                                    $.ajax({
+                                        method: 'post',
+                                        dataType: 'json',
+                                        url: BREAD_ORDER_PROCESSING_URL,
+                                        data: breadData
+                                    }).then(function (response) {
+                                        if (response.success) {
+                                            if (self.clearCart) {
+                                                self.setCookie(self.cart_cookie, '');
+                                            }
+                                            self.orderComplete(response, breadParams.params);
+                                        } else {
+                                            alert(response.message);
+                                        }
+                                    });
+                                });
+
+                                window.BreadPayments.init();
+                                breadInit = true;
+                            });
+
+                        } else if (shippingChoice === "0" || !shippingChoice) {
+                            $("#PaymentMethodTypeDisplay").prop("selectedIndex", 0);
+                            $("#bread-checkout-btn").remove();
+                            $("#btnSubmitOrder").show();
+                            alert("Please choose a shipping option");
+                        }
+
+                        // When the Bread Pay Button is clicked:
+                        $("#bread-checkout-btn").on("click", () => {
+                                if (shippingChoice === "0") {
+                                    /**
+                                     * Shipping options are the only thing that cannot be updated or corrected in the Bread Pay modal.
+                                     * This check prevents buyers from moving forward without having chosen a shipping option.
+                                     */
+                                    alert("Please choose a shipping option");
+                                } else {
+                                    // Open the Bread Pay modal and begin checkout.
+                                    breadModalOpen();
+                                }
+                            });
+                    } else {
+                        // Remove the Bread Pay button and reveal the Volusion one when the buyer switches from Bread Pay to another payment type
+                        $("#bread-checkout-btn").remove();
+                        $("#btnSubmitOrder").show();
+                    };
+                });
+
+                const breadModalOpen = async () => {
+                    /**
+                     * Open the Bread Pay Modal
+                     */
+
+                    const breadParams = await getBreadParams();
+
+                    window.BreadPayments.registerPlacements([breadParams.placement]);
+                    window.BreadPayments.openExperienceForPlacement([breadParams.placement]);
+
+                };
+
+                const getBreadParams = async () => {
+                    /**
+                     * Collect and organize the data needed for checkout
+                     */
+
+                    return new Promise((resolve, reject) => {
+
+                        let buyer = {};
+                        let placement;
+                        let data;
+
+                        $.when(self.getCheckoutParams()).done(function (params) {
+
+                            const shippingChoice = getShippingChoice();
+
+                            buyer = {
+                                givenName: params.givenName,
+                                familyName: params.familyName,
+                                additionalName: "",
+                                birthDate: "",
+                                email: params.email,
+                                phone: params.phone,
+                                billingAddress: params.billingAddress,
+                                shippingAddress: params.shippingAddress
+                            };
+
+                            const totalShipping = shippingChoice.shippingCost
+
+                            const totalTaxString = $("#TotalsTax1TD").text();
+                            const totalTax = Math.round(Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100);
+                            let excluded_products = [];
+
+                            let subTotal = 0;
+                            params.items.forEach(item => {
+                                const product_code = item.sku;
+                                const product_name = item.name;
+
+                                // Check if products are filtered out of Bread availability
+                                if (!self.skuCheck(product_code)) {
+                                    excluded_products.push(product_name);
+                                };
+
+                                subTotal += item.unitPrice * item.quantity;
+                                item.shippingCost = {
+                                    value: totalShipping,
+                                    currency: "USD",
+                                };
+                                item.unitTax = {
+                                    value: 0,
+                                    currency: "USD",
+                                };
+                                item.shippingDescription = shippingChoice.shippingDescription
+
+                            });
+
+                            let totalPrice;
+
+                            // Check if the buyer has any excluded products in their cart.
+                            if (excluded_products.length > 0) {
+                                alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with Bread Pay, remove them from your cart and try again.`);
+                                return;
+                            } else {
+                                // Check that the price is between min and max set prices
+                                if (self.minMaxCheck(subTotal)) {
+
+                                    let totalDiscounts = 0;
+                                    params.discounts.forEach(discount => {
+                                        totalDiscounts += discount.unitPrice;
+                                    });
+
+                                    totalPrice = subTotal + totalTax + totalShipping - totalDiscounts;
+
+                                    placement = {
+                                        locationType: "checkout",
+                                        domID: "bread-checkout-btn",
+                                        allowCheckout: true,
+                                        order: {
+                                            items: params.items,
+                                            subTotal: {
+                                                value: subTotal,
+                                                currency: "USD",
+                                            },
+                                            totalTax: {
+                                                value: totalTax,
+                                                currency: "USD",
+                                            },
+                                            totalShipping: {
+                                                value: totalShipping,
+                                                currency: "USD",
+                                            },
+                                            totalDiscounts: {
+                                                value: totalDiscounts,
+                                                currency: "USD",
+                                            },
+                                            totalPrice: {
+                                                value: totalPrice,
+                                                currency: "USD",
+                                            },
+                                        }
+                                    };
+                                };
+                            };
+
+                            // The jsonHelper Decode function in the asp folder breaks nested objects, 
+                            // so I have to send the customer contact info here or else it doesn't work,
+                            // But I also have to restructure it so there are no nested objects
+
+                            let contactInfo = {
+                                firstName: params.givenName,
+                                lastName: params.familyName,
+                                fullName: `${params.givenName} ${params.familyName}`,
+                                email: params.email,
+                                phone: params.phone
+                            }
+
+                            // asp can't parse JSON natively, so we have to transform these objects into strings
+                            // the use jsonHelper to convert and manipulate them in the asp files.
+
+                            data = {
+                                shippingID: shippingChoice.shippingID,
+                                amount: JSON.stringify({ currency: "USD", value: totalPrice }),
+                                billingAddress: JSON.stringify(params.billingAddress),
+                                shippingAddress: JSON.stringify(params.shippingAddress),
+                                contactInfo: JSON.stringify(contactInfo)
+                            };
+
+                            const response = { "buyer": buyer, "placement": placement, "data": data, "params": params }
+
+                            resolve(response);
+
+                        });
+
+                    });
+                };
 
                 let getShippingChoice = () => {
+                    /**
+                     * Get shipping information from the buyer's choices on the checkout page
+                     */
                     const shippingID = document.getElementsByName("ShippingSpeedChoice")[0].value;
                     const shippingChoiceRaw = document.querySelector(`option[value="${shippingID}"]`).innerHTML;
                     let shippingChoiceArray = shippingChoiceRaw.split("").reverse();
@@ -1327,219 +1586,8 @@
 
                     return { shippingID: shippingID, shippingDescription: shippingName, shippingCost: totalShipping };
 
-                }
-
-                var refreshCheckoutParams = function () {
-                    $.when(self.getCheckoutParams()).done(function (params) {
-
-                        const shippingChoice = getShippingChoice();
-
-                        const buyer = {
-                            givenName: params.givenName,
-                            familyName: params.familyName,
-                            additionalName: "",
-                            birthDate: "",
-                            email: params.email,
-                            phone: params.phone,
-                            billingAddress: params.billingAddress,
-                            shippingAddress: params.shippingAddress
-                        }
-
-                        if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
-                            window.BreadPayments.setup({
-                                integrationKey: integrationKey,
-                                buyer: buyer
-                            });
-                        } else {
-                            const td = $('#divbtnSubmitOrder');
-                            td.before("<div id='checkout-container'></div>");
-
-                            window.BreadPayments.setEmbedded(true);
-
-                            window.BreadPayments.setup({
-                                integrationKey: integrationKey,
-                                buyer: buyer,
-                                containerID: "checkout-container"
-                            });
-                        };
-
-                        const totalShipping = shippingChoice.shippingCost
-
-                        const totalTaxString = $("#TotalsTax1TD").text();
-                        const totalTax = Math.round(Number(totalTaxString.replace(/[^0-9.-]+/g, "")) * 100);
-                        let excluded_products = [];
-
-                        let subTotal = 0;
-                        params.items.forEach(item => {
-                            const product_code = item.sku;
-                            const product_name = item.name;
-
-                            // Check if products are filtered out of Bread availability
-                            if (!self.skuCheck(product_code)) {
-                                excluded_products.push(product_name);
-                            };
-
-                            subTotal += item.unitPrice * item.quantity;
-                            item.shippingCost = {
-                                value: totalShipping,
-                                currency: "USD",
-                            };
-                            item.unitTax = {
-                                value: 0,
-                                currency: "USD",
-                            };
-                            item.shippingDescription = shippingChoice.shippingDescription
-
-                        });
-
-                        if (excluded_products.length > 0) {
-                            alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with Bread, remove them from your cart and try again.`)
-                        } else {
-                            // Check that the price is between min and max set prices
-                            if (self.minMaxCheck(subTotal)) {
-
-                                let totalDiscounts = 0;
-                                params.discounts.forEach(discount => {
-                                    totalDiscounts += discount.unitPrice;
-                                });
-
-                                const totalPrice = subTotal + totalTax + totalShipping - totalDiscounts;
-
-                                const placement = {
-                                    locationType: "checkout",
-                                    domID: "bread-checkout-btn",
-                                    allowCheckout: true,
-                                    order: {
-                                        items: params.items,
-                                        subTotal: {
-                                            value: subTotal,
-                                            currency: "USD",
-                                        },
-                                        totalTax: {
-                                            value: totalTax,
-                                            currency: "USD",
-                                        },
-                                        totalShipping: {
-                                            value: totalShipping,
-                                            currency: "USD",
-                                        },
-                                        totalDiscounts: {
-                                            value: totalDiscounts,
-                                            currency: "USD",
-                                        },
-                                        totalPrice: {
-                                            value: totalPrice,
-                                            currency: "USD",
-                                        },
-                                    }
-                                };
-
-                                window.BreadPayments.registerPlacements([placement]);
-
-                                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-
-                                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
-
-                                    // The jsonHelper Decode function breaks nested objects, 
-                                    // so I have to send the customer contact info here or else it doesn't work,
-                                    // But I also have to restructure it so there are no nested objects
-
-                                    let contactInfo = {
-                                        firstName: params.givenName,
-                                        lastName: params.familyName,
-                                        fullName: `${params.givenName} ${params.familyName}`,
-                                        email: params.email,
-                                        phone: params.phone
-                                    }
-
-                                    // asp can't parse JSON natively, so we have to transform these objects into strings
-                                    // the use jsonHelper to convert and manipulate them in the asp files.
-
-                                    var data = {
-                                        tx_id: response.transactionID,
-                                        shippingID: shippingChoice.shippingID,
-                                        amount: JSON.stringify({ currency: "USD", value: response.order.totalPrice.value }),
-                                        billingAddress: JSON.stringify(params.billingAddress),
-                                        shippingAddress: JSON.stringify(params.shippingAddress),
-                                        contactInfo: JSON.stringify(contactInfo)
-                                    };
-
-                                    // Add in any variable options selected for the product
-                                    $.each(params.items, function (i, item) {
-                                        if (item.options) {
-                                            if (item.options._values) {
-                                                data[item.sku + '_options'] = item.options._values.join('');
-                                            }
-                                        }
-                                    });
-
-                                    // Send along the order items to process. The bread backend doesnt maintain
-                                    // the correct order of transaction line items, so we may need this.
-                                    data.items = params.items.map(function (item) {
-                                        var line = Object.assign({}, item);
-                                        line.product = { name: line.name };
-                                        delete line.name;
-                                        return line;
-                                    });
-
-                                    data.items = JSON.stringify(data.items)
-
-                                    $.ajax({
-                                        method: 'post',
-                                        dataType: 'json',
-                                        url: BREAD_ORDER_PROCESSING_URL,
-                                        data: data
-                                    }).then(function (response) {
-                                        if (response.success) {
-                                            if (self.clearCart) {
-                                                self.setCookie(self.cart_cookie, '');
-                                            }
-                                            self.orderComplete(response, params);
-                                        } else {
-                                            alert(response.message);
-                                        }
-                                    });
-                                });
-
-                                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-
-                                window.BreadPayments.__internal__.init();
-                            };
-                        };
-                    });
                 };
 
-
-                // Reapply the checkout options any time a contact info field changes
-                $.each([
-                    'BillingFirstName', 'ShipFirstName',
-                    'BillingLastName', 'ShipLastName',
-                    'BillingAddress1', 'ShipAddress1',
-                    'BillingAddress2', 'ShipAddress2',
-                    'BillingPostalCode', 'ShipPostalCode',
-                    'BillingCity', 'ShipCity',
-                    'BillingState', 'ShipState',
-                    'BillingPhoneNumber', 'ShipPhoneNumber',
-                    'BillingCountry'
-                ], function (i, name) {
-                    $('input[name="' + name + '"]').on('change', refreshCheckoutParams);
-                });
-                $("#DisplayShippingSpeedChoicesTD").change(function () { refreshCheckoutParams() })
-                $("#v65-cart-billemail").change(function () { refreshCheckoutParams() })
-
-                refreshCheckoutParams();
-
-            },
-
-            /**
-             * Insert the button into the page
-             *
-             * @param	jquery		button			The jquery wrapped button element
-             * @return	void
-             */
-            insertButton: function (button) {
-                var td = $('#divbtnSubmitOrder');
-                td.before(button);
             },
 
             /**
@@ -1643,8 +1691,6 @@
                     let taxAndShippingCalc = (shippingContact) => {
                         const response = {};
                         $.when(self.getCheckoutTotals(items, shippingContact)).done(function (result) {
-                            // TODO: Since I've had to move the calculation to makeBread, 
-                            // I think I can probably remove this whole taxandShippingCalc function, but keeping it in for now JIC
                             response.shipping = result.shipping;
                             response.tax = result.tax;
                         });
@@ -1775,6 +1821,7 @@
                     sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                     sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                     sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
+                    sessionStorage.setItem("bread_payment_method_name", settings.bread_payment_method_name);
                     breadEnv = settings.environment;
                     api_key = settings.platform_api_key;
                     initPage();
@@ -1791,6 +1838,7 @@
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                 sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                 sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
+                sessionStorage.setItem("bread_payment_method_name", settings.bread_payment_method_name)
                 initPage();
             })
         }

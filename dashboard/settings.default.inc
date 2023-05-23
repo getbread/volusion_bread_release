@@ -20,6 +20,7 @@ bread_enable_sku_filter|Off
 bread_sku_filter_list|
 bread_embedded_checkout|
 bread_payment_method_id|
+bread_payment_method_name|
 bread_payment_settle|
 bread_disable_product_checkout|
 bread_disable_cart_checkout|
