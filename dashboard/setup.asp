@@ -72,21 +72,15 @@
 				<input type="text" id="bread_platform_auth" name="bread_platform_auth" class="form-control" value="<% = dct_setup("bread_platform_auth") %>">
 			</div>
 		</div>
+		<div class="form-group">
+			<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method ID</label>
+			<div class="col-md-6">
+				<input type="text" id="bread_payment_method_id" name="bread_payment_method_id" class="form-control" value="<% = dct_setup("bread_payment_method_id") %>">
+			</div>
+		</div>
 	</div>
 	
-	<h4>Bread Pay Settings</h4>
-	<div class="form-group">
-		<label for="bread_payment_method_id" class="col-md-2 control-label">Payment Method ID</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_payment_method_id" name="bread_payment_method_id" class="form-control" value="<% = dct_setup("bread_payment_method_id") %>">
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="bread_payment_method_name" class="col-md-2 control-label">Payment Method Name</label>
-		<div class="col-md-6">
-			<input type="text" id="bread_payment_method_name" name="bread_payment_method_name" class="form-control" value="<% = dct_setup("bread_payment_method_name") %>">
-		</div>
-	</div>
+	<h3>Bread Pay Settings</h3>
 	<div class="form-group">
 		<label for="completed_order_status" class="col-md-2 control-label">Completed Order Status</label>
 		<div class="col-md-6">
@@ -142,7 +136,7 @@
 		<div class="col-md-6">
 			<input type="text" id="bread_sku_filter_list" name="bread_sku_filter_list" class="form-control" value="<% = dct_setup("bread_sku_filter_list") %>">
 			<p>
-			To include or exclude only certain products as available for payment via Bread, choose include or exclude from the dropdown above, and list the product code of each item on which you want to include or exclude Bread checkout, separated by commas. If you choose include, only the products with codes listed here will be available for Bread payment. If you choose exclude, all products except those listed here will be available for Bread payment.
+			To include or exclude only certain products as available for payment via Bread Pay, choose include or exclude from the dropdown above, and list the product code of each item on which you want to include or exclude Bread Pay checkout, separated by commas. If you choose include, only the products with codes listed here will be available for Bread Pay checkout. If you choose exclude, all products except those listed here will be available for Bread Pay checkout.
 			</p>
 		</div>
 	</div>
@@ -160,7 +154,7 @@
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_product_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_product_button" name="bread_disable_product_button" value="on"<% If dct_setup("bread_disable_product_button") = "on" Then %> checked="checked"<% End If %> />
-				If this box is checked, the Bread button will not appear on individual product description pages
+				If this box is checked, the Bread Pay button will not appear on individual product description pages
 			</label>
 		</div>
 	</div>
@@ -169,7 +163,7 @@
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_cart_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_cart_button" name="bread_disable_cart_button" value="on"<% If dct_setup("bread_disable_cart_button") = "on" Then %> checked="checked"<% End If %> />
-				If this box is checked, the Bread button will not appear on the cart page
+				If this box is checked, the Bread Pay button will not appear on the cart page
 			</label>
 		</div>
 	</div>
@@ -178,7 +172,7 @@
 		<div class="col-md-6 checkbox">
 			<label for="bread_disable_category_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="bread_disable_category_button" name="bread_disable_category_button" value="on"<% If dct_setup("bread_disable_category_button") = "on" Then %> checked="checked"<% End If %> />
-				If this box is checked, the Bread button will not appear on category pages
+				If this box is checked, the Bread Pay button will not appear on category pages
 			</label>
 		</div>
 	</div>
@@ -250,10 +244,10 @@
 		<div class="col-md-6 checkbox">
 			<label for="disable_autoload" class="control-label" style="margin-bottom: 15px; text-align:left;">
 				<input type="checkbox" id="disable_autoload" name="disable_autoload" value="on"<% If dct_setup("disable_autoload") = "on" Then %> checked="checked"<% End If %> />
-				Disable the bread checkout/buttons from automatically displaying on the site. (default: off)
+				Disable the Bread Pay checkout/buttons from automatically displaying on the site. (default: off)
 			</label>
 			<div class="alert alert-info">
-				Add "?bread_test" to the end of a site url to cause the bread button to load.
+				Add "?bread_test" to the end of a site url to cause the Bread Pay button to load.
 			</div>
 		</div>
 	</div>
@@ -264,8 +258,8 @@
 
 </br></br>
 <div class="col-md-4 col-md-offset-3">
-	<p>Click below to refresh the Bread Merchant Portal</p>
-	<button class="btn btn-default btn-block" id="bread_refresh">Refresh Bread</button>
+	<p>Click below to refresh the Bread Pay Merchant Portal</p>
+	<button class="btn btn-default btn-block" id="bread_refresh">Refresh Bread Pay</button>
 </div>
 
 <!--#include file="_footer.inc"-->

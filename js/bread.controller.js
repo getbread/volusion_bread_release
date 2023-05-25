@@ -1303,14 +1303,13 @@
 
                 let breadInit = false;
                 let shippingChoice = "0";
-                const breadPaymentMethodName = sessionStorage.getItem("bread_payment_method_name");
 
                 $("#PaymentMethodTypeDisplay").change(function () {
                     // Initialize the Bread Pay modal once the buyer chooses the Bread Pay option
-                    if ($("#PaymentMethodType").val() === breadPaymentMethodName) {
+                    if ($("#PaymentMethodType").val() === "BreadPay™—PayOverTime") {
                         // Hide the standard volusion button and replace it with the Bread Pay Option
                         $("#btnSubmitOrder").hide();
-                        const breadButton = `<button class="w-100 btn btn-primary btn-lg" id="bread-checkout-btn" type="button" style="display: inline-block; margin: 5px auto;">${breadPaymentMethodName}</button></br>`;
+                        const breadButton = `<button class="w-100 btn btn-primary btn-lg" id="bread-checkout-btn" type="button" style="display: inline-block; margin: 5px auto; font-family: Poppins, sans-serif;">Bread Pay™ - Pay Over Time</button>`;
                         $("#btnSubmitOrder").before(breadButton);
                         // Save the buyer's shipping choice to ensure they have chosen one before proceeding
                         shippingChoice = document.getElementsByName("ShippingSpeedChoice")[0].value;;
@@ -1832,7 +1831,6 @@
                     sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                     sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                     sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
-                    sessionStorage.setItem("bread_payment_method_name", settings.bread_payment_method_name);
                     breadEnv = settings.environment;
                     api_key = settings.platform_api_key;
                     initPage();
@@ -1849,7 +1847,6 @@
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                 sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                 sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
-                sessionStorage.setItem("bread_payment_method_name", settings.bread_payment_method_name);
                 initPage();
             })
         }

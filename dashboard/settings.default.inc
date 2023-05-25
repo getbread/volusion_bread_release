@@ -6,7 +6,6 @@ apipassword|
 merchantfrom|
 merchantemail|
 bread_env|sandbox
-bread_version|platform
 bread_platform_api_key|
 bread_platform_api_secret|
 bread_platform_integration_key|
@@ -17,7 +16,6 @@ bread_enable_sku_filter|Off
 bread_sku_filter_list|
 bread_embedded_checkout|
 bread_payment_method_id|
-bread_payment_method_name|
 bread_payment_settle|
 bread_disable_product_button|
 bread_disable_cart_button|
