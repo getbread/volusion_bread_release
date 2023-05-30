@@ -11,14 +11,19 @@ Dim tx_id : tx_id = Request.Form("tx_id")
 Dim amount : amount = Request.Form("amount")
 Dim order_status : order_status = Request.Form("order_status")
 Dim externalID : externalID = Request.Form("externalID")
+Dim carrier : carrier = Request.Form("carrier")
+Dim trackingNumber : trackingNumber = Request.Form("trackingNumber")
 
 If tx_id = "" Then
 	Response.Write "{ ""success"": false, ""message"": ""tx_id missing"" }"
 	Response.End
 End If
 
-' Always send an order ID number to Bread
+' Always send an order ID number to Bread and update shipping info if available
 Set update = breadPlatform.updateTransaction( tx_id, externalID )
+
+' Add shipping info
+Set fulfillment = breadPlatform.updateFulfillmentInfo( tx_id, carrier, trackingNumber )
 
 ' Determine the new status of the order and
 ' update the Bread Merchant Portal accordingly

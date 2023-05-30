@@ -93,46 +93,44 @@ breadRefreshButton.onclick = () => {
             const jsonResponse = xmlToJson(xmlResponse)
             const orders = jsonResponse.xmldata.Orders;
 
+            let data;
+
             if (orders) {
                 if (orders.constructor === Array) {
                     orders.forEach(order => {
-                        let data = {
+                        data = {
                             order_status: order["OrderStatus"]["#text"],
                             tx_id: order["Custom_Field_Custom5"]["#text"],
                             externalID: order["OrderID"]["#text"],
-                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
+                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) }),
+                            carrier: order["TrackingNumbers"]["Gateway"]["#text"],
+                            trackingNumber: order["TrackingNumbers"]["TrackingNumber"]["#text"]
                         }
-
-                        // This ajax call sends the new and updated orders to Bread
-                        $.ajax({
-                            method: 'post',
-                            dataType: 'json',
-                            url: "/v/bread/asp/updateOrders.asp",
-                            data: data
-                        }).then(response => {
-                            // ASP does not always send a response upon successful completion. 
-                            // If you do not see this alert, it does not necessarily mean the update did not go through.
-                            // Click again and you should see "All Bread orders are up to date"
-                            alert("Bread updated")
-                        });
                     });
                 } else {
-                    let data = {
+                    // if there is only a single order updating, we format things differently
+                    data = {
                         order_status: orders["OrderStatus"]["#text"],
                         tx_id: orders["Custom_Field_Custom5"]["#text"],
                         externalID: orders["OrderID"]["#text"],
-                        amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
+                        amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) }),
+                        carrier: orders["TrackingNumbers"]["Gateway"]["#text"],
+                        trackingNumber: orders["TrackingNumbers"]["TrackingNumber"]["#text"]
                     }
-
-                    $.ajax({
-                        method: 'post',
-                        dataType: 'json',
-                        url: "/v/bread/asp/updateOrders.asp",
-                        data: data
-                    }).then(response => {
-                        alert("Bread updated")
-                    });
                 };
+
+                // This ajax call sends the new and updated orders to Bread
+                $.ajax({
+                    method: 'post',
+                    dataType: 'json',
+                    url: "/v/bread/asp/updateOrders.asp",
+                    data: data
+                }).then(response => {
+                    // ASP does not always send a response upon successful completion. 
+                    // If you do not see this alert, it does not necessarily mean the update did not go through.
+                    // Click again and you should see "All Bread orders are up to date"
+                    alert("Bread updated")
+                });
             } else {
                 alert("All Bread orders are up to date");
             };

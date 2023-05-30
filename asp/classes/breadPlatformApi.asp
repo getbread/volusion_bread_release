@@ -113,6 +113,7 @@ Class BreadPlatformAPI
 	
 		payload.Add "type", "update"
 		payload.Add "externalID", externalID
+
 		Set updateTransaction = makeRequest( "PATCH", "/api/transaction/" & tx_id, payload )
 		
 	End Function
@@ -160,6 +161,23 @@ Class BreadPlatformAPI
 		
 		Set refundTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
 		
+	End Function
+
+	' Update shipping info on a transaction
+	'
+	' @param 	string			tx_id			The bread transaction id
+	' @param	string			carrier			The name of the shipping carrier
+	' @param 	string			trackingNumber	The shipping Tracking Number
+	Public Function updateFulfillmentInfo( tx_id, carrier, trackingNumber )
+
+		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
+
+		payload.Add "type", "fulfillment"
+		payload.Add "carrier", carrier
+		payload.Add "trackingNumber", trackingNumber 
+
+		Set updateFulfillmentInfo = makeRequest( "POST", "/api/transaction/" + tx_id + "/fulfillment", payload )
+
 	End Function
 
 	' Internal api request helper
