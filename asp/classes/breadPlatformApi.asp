@@ -143,6 +143,7 @@ Class BreadPlatformAPI
 
 		payload.Add "type", "cancel"
 		payload.Add "amount", jsonHelper.Decode(amount)
+		payload.Add "tx_id", tx_id
 		
 		Set cancelTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/cancel", payload )
 		
@@ -208,10 +209,16 @@ Class BreadPlatformAPI
 			
 		http.Send jsonHelper.Encode( payload )
 		If dct_settings("debug_mode") = "on" Then
+			bread_log.WriteLine( jsonHelper.Decode(http.responseText).Exists("message"))
 			bread_log.WriteLine( "Response: " & http.responseText )
 			bread_log.Close
 		End If
-		
+
+		If jsonHelper.Decode(http.responseText).Exists("message") Then
+			Response.Write "{ ""success"": false, ""message"": ""Order " & payload("tx_id") & " failed to update."" }"
+			Response.End
+		End If
+
 		Set makeRequest = jsonHelper.Decode( http.responseText )
 		
 	End Function

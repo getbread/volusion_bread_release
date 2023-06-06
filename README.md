@@ -9,14 +9,14 @@ Bread Pay / Volusion Integration Guide
 3. Log into the volusion administration screen.
 4. Edit the theme template via: Design > File Editor > template_xxx.html
 5. Add the following script tag to the bottom of the template just before the
-   closing </body> tag.
+   closing `</body>` tag.
 
 
 ```html
 <script type="text/javascript" src="/v/bread/js/bread.controller.js"></script>
 ```
 
-6. Add the following lines to the top of the template, just before the closing </head> tag:
+6. Add the following lines to the top of the template, just before the closing `</head>` tag:
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -157,6 +157,11 @@ Volusion's API can occassionally fail. If you click this button but don't see a 
 * Click "Reset Export," and then return to your Bread Pay Dashboard and click "Refresh Bread" again.
 
 If you still aren't seeing the updates you expect, please reach out to Bread Financial Support.
+
+The Bread Pay Merchant Portal does not allow orders to be canceled after they have been settled. 
+You must refund the order. Volusion, however, does allow Shipped orders to be Canceled.
+If you attempt to cancel an order in Volusion that has already been marked as Settled in Bread Pay, 
+you will recieve an error when you click "Refresh Bread Pay" and the order will not be updated.
 
 ## Forgot your Bread Pay Dashboard Password?
 An admin on your Bread Pay account can work with Bread Pay Customer Support to help you reset your password. See [Bread Pay Customer Support](https://payments.breadfinancial.com/customer-support/?__hstc=204239887.d06e461549a0697994ca36011b96b2cc.1683915698444.1684957072186.1684959372774.3&__hssc=204239887.1.1684959372774&__hsfp=2609180766) for more details.

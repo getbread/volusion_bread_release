@@ -102,10 +102,15 @@ breadRefreshButton.onclick = () => {
                             order_status: order["OrderStatus"]["#text"],
                             tx_id: order["Custom_Field_Custom5"]["#text"],
                             externalID: order["OrderID"]["#text"],
-                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) }),
-                            carrier: order["TrackingNumbers"]["Gateway"]["#text"],
-                            trackingNumber: order["TrackingNumbers"]["TrackingNumber"]["#text"]
-                        }
+                            amount: JSON.stringify({ currency: "USD", value: Math.round(Number(order["PaymentAmount"]["#text"]) * 100) })
+                        };
+                        // Some updates contain carrier info and tracking number:
+                        if("TrackingNumbers" in order) {
+                            data.carrier = order["TrackingNumbers"]["Gateway"]["#text"];
+                        };
+                        if ("TrackingNumbers" in order) {
+                            data.TrackingNumber = order["TrackingNumbers"]["TrackingNumber"]["#text"];
+                        };
                     });
                 } else {
                     // if there is only a single order updating, we format things differently
@@ -113,10 +118,15 @@ breadRefreshButton.onclick = () => {
                         order_status: orders["OrderStatus"]["#text"],
                         tx_id: orders["Custom_Field_Custom5"]["#text"],
                         externalID: orders["OrderID"]["#text"],
-                        amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) }),
-                        carrier: orders["TrackingNumbers"]["Gateway"]["#text"],
-                        trackingNumber: orders["TrackingNumbers"]["TrackingNumber"]["#text"]
-                    }
+                        amount: JSON.stringify({ currency: "USD", value: Math.round(Number(orders["PaymentAmount"]["#text"]) * 100) })
+                    };
+                    // Some updates contain carrier info and tracking number:
+                    if("TrackingNumbers" in orders) {
+                        data.carrier = orders["TrackingNumbers"]["Gateway"]["#text"];
+                    };
+                    if ("TrackingNumbers" in orders) {
+                        data.TrackingNumber = orders["TrackingNumbers"]["TrackingNumber"]["#text"];
+                    };
                 };
 
                 // This ajax call sends the new and updated orders to Bread
@@ -129,7 +139,13 @@ breadRefreshButton.onclick = () => {
                     // ASP does not always send a response upon successful completion. 
                     // If you do not see this alert, it does not necessarily mean the update did not go through.
                     // Click again and you should see "All Bread orders are up to date"
-                    alert("Bread updated")
+                    if (!response.success) {
+                        if (window.confirm(response.message + " Copy the transaction number and click OK to navigate to your Bread Pay Merchant Portal to ensure any cancellations or refunds have processed as expected. Click Cancel to close.")) {
+                            window.location.href = "https://merchants.platform.breadpayments.com/login"
+                        }
+                    } else {
+                        alert("Bread updated successfully")
+                    }
                 });
             } else {
                 alert("All Bread orders are up to date");

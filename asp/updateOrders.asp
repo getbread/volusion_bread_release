@@ -23,7 +23,9 @@ End If
 Set update = breadPlatform.updateTransaction( tx_id, externalID )
 
 ' Add shipping info
-Set fulfillment = breadPlatform.updateFulfillmentInfo( tx_id, carrier, trackingNumber )
+If Not TypeName(carrier) = "Empty" Then
+	Set fulfillment = breadPlatform.updateFulfillmentInfo( tx_id, carrier, trackingNumber )
+End If
 
 ' Determine the new status of the order and
 ' update the Bread Merchant Portal accordingly
@@ -32,21 +34,21 @@ If order_status = "Cancelled" Then
 
 Set cancel = breadPlatform.cancelTransaction( tx_id, amount )
 
-Response.Write "Order Updated"
+Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
 Response.End
 
 Elseif order_status = "Returned" Then
 
 Set refund = breadPlatform.refundTransaction( tx_id, amount )
 
-Response.Write "Order Updated"
+Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
 Response.End
 
 Elseif order_status = "Shipped" Then
 
 Set settle = breadPlatform.settleTransaction( tx_id, amount )
 
-Response.Write "Order Updated"
+Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
 Response.End
 
 End If
