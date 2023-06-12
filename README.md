@@ -3,12 +3,13 @@ Bread Pay / Volusion Integration Guide
 
 # Installation
 
-1. Unzip and upload the contents of volusion_plugin.zip to the volusion store via SFTP into a folder named "bread".
+1. Unzip and upload the contents of volusion_bread_release.zip to the volusion store via SFTP into a folder named "bread".
    - Here are details on how to set up and use your Volusion SFTP account: https://volusionhome.my.site.com/knowledgebase/s/article/UsingYourVolusionFTPSFTPAccount
 2. Rename the bread/dashboard/settings.default.inc to bread/dashboard/settings.inc
-3. Log into the volusion administration screen.
-4. Edit the theme template via: Design > File Editor > template_xxx.html
-5. Add the following script tag to the bottom of the template just before the
+3. In the schema folder, there are two files called `orderHistory.sql` and `orderHistory.xsd`. Use the SFTP program to add those to /vspfiles/schema/Generic.
+4. Log into the volusion administration screen.
+5. You can edit the theme template via: Design > File Editor > template_xxx.html
+6. Add the following script tag to the bottom of the template just before the
    closing `</body>` tag.
 
 
@@ -16,7 +17,7 @@ Bread Pay / Volusion Integration Guide
 <script type="text/javascript" src="/v/bread/js/bread.controller.js"></script>
 ```
 
-6. Add the following lines to the top of the template, just before the closing `</head>` tag:
+7. Add the following lines to the top of the template, just before the closing `</head>` tag:
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,9 +25,9 @@ Bread Pay / Volusion Integration Guide
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 ```
 
-7. Make sure your store is set to use Standard Checkout. In your Volusion dashboard, go to Settings > Checkout and make sure "Premium Checkout" is *not* checked.
-8. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ - Pay Over Time" without the quotation marks. Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings.
-9. Once you've installed Bread Pay via SFTP, your Bread Pay Dashboard can be found at `your-store-url.com/v/bread/dashboard`. Switch out "your-store-url" for the homepage of your Volusion store website. Follow the steps for each the Bread Pay Integration fields below to finish setting up your store.
+8. Make sure your store is set to use Standard Checkout. In your Volusion dashboard, go to Settings > Checkout and make sure "Premium Checkout" is *not* checked.
+9. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ - Pay Over Time" without the quotation marks. Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings.
+10. Once you've installed Bread Pay via SFTP, your Bread Pay Dashboard can be found at `your-store-url.com/v/bread/dashboard`. Switch out "your-store-url" for the homepage of your Volusion store website. Follow the steps for each the Bread Pay Integration fields below to finish setting up your store.
    
 **Notes:**
 If the Volusion site being installed to does not contain a reference to a version of
@@ -146,7 +147,7 @@ If this box is checked, no Bread Pay buttons will appear on your site, unless yo
 When the fields above have been updated, click here to save your changes
 
 ## Refresh Bread Pay Button
-Volusion does not send data to the Bread Pay Merchant Portal automatically. Click here to send data on order changes such as settlements, cancellations, and refunds to the Bread Pay Merchant Portal.
+Volusion does not send data to the Bread Pay Merchant Portal automatically. Click here to send data on order changes such as settlements, cancellations, and refunds to the Bread Pay Merchant Portal. A report will be generated on the page so that you can see if any orders cannot be updated. This may occur for several reasons, for example, that an already cancelled order cannot be refunded. Each order will tell you its status upon the update completing. It may take several minutes depending on the number of orders.
 
 Volusion's API can occassionally fail. If you click this button but don't see a change, or don't see the updates you expect, reset the Volusion API by following the following steps:
  * In your Volusion Dashboard, open Inventory > Volusion API
@@ -156,7 +157,7 @@ Volusion's API can occassionally fail. If you click this button but don't see a 
 * If needed, choose a particular order ID to reset. This will only reset that one order, and is helpful if you're only seeing one or two orders not updating as expected.
 * Click "Reset Export," and then return to your Bread Pay Dashboard and click "Refresh Bread" again.
 
-If you still aren't seeing the updates you expect, please reach out to Bread Financial Support.
+If you still aren't seeing the updates you expect, please reach out to Bread Pay Support.
 
 The Bread Pay Merchant Portal does not allow orders to be canceled after they have been settled. 
 You must refund the order. Volusion, however, does allow Shipped orders to be Canceled.
