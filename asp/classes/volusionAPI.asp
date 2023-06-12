@@ -204,6 +204,12 @@ Class VolusionApi
 
 	End Function
 
+	Public Function getAllOrders(method, params)
+
+	set getAllOrders = makeRequest(method, params, "")
+
+	End Function
+
 	' Internal api request helper
 	'
 	' @param	string			method			The request method (GET,INSERT,UPDATE,DELETE)

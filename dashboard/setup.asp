@@ -258,7 +258,7 @@
 
 </br></br>
 <div class="col-md-4 col-md-offset-3">
-	<p>Click below to refresh the Bread Pay Merchant Portal</p>
+	<p>Click below to refresh the Bread Pay Merchant Portal. Orders updated in the last 90 days will be updated in Bread. This may take several minutes. Status updates will appear below. Please double check any failed cancellations or refunds to be sure they are accurately reflected in <a href="https://merchants.platform.breadpayments.com/login" target="_blank">your Bread Pay Portal</a>.</p>
 	<button class="btn btn-default btn-block" id="bread_refresh">Refresh Bread Pay</button>
 </div>
 

@@ -34,21 +34,21 @@ If order_status = "Cancelled" Then
 
 Set cancel = breadPlatform.cancelTransaction( tx_id, amount )
 
-Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
+Response.Write "{ ""success"": true, ""message"": ""Order " & tx_id & " Updated Successfully"" }"
 Response.End
 
 Elseif order_status = "Returned" Then
 
 Set refund = breadPlatform.refundTransaction( tx_id, amount )
 
-Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
+Response.Write "{ ""success"": true, ""message"": ""Order " & tx_id & " Updated Successfully"" }"
 Response.End
 
 Elseif order_status = "Shipped" Then
 
 Set settle = breadPlatform.settleTransaction( tx_id, amount )
 
-Response.Write "{ ""success"": true, ""message"": ""Bread Updated"" }"
+Response.Write "{ ""success"": true, ""message"": ""Order " & tx_id & " Updated Successfully"" }"
 Response.End
 
 End If

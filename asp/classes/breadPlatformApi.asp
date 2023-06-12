@@ -128,8 +128,30 @@ Class BreadPlatformAPI
 
 		payload.Add "type", "settle"
 		payload.Add "amount", jsonHelper.Decode(amount)
+
+		Dim settleResponse : Set settleResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
+
+		' Check for an error, and then return an appropriate response based on error status
+		If settleResponse.Exists("message") Then
+			If settleResponse("metadata")("status") = "SETTLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " previously settled successfully."" }"
+				Response.End
+			Elseif settleResponse("metadata")("status") = "REFUNDED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously refunded orders cannot be settled."" }"
+				Response.End
+			Elseif settleResponse("metadata")("status") = "CANCELLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously cancelled orders cannot be settled."" }"
+				Response.End
+			Elseif refundResponse("metadara")("status")= "PARTIALLY_REFUNDED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously partially refunded orders must be managed in the Portal."" }"
+				Response.End
+			Elseif refundResponse("metadara")("status")= "PARTIALLY_CANCELLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously partially cancelled orders must be managed in the Portal."" }"
+				Response.End
+			End If
+		End If
 		
-		Set settleTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/settle", payload )
+		Set settleTransaction = settleResponse
 		
 	End Function
 	
@@ -143,9 +165,27 @@ Class BreadPlatformAPI
 
 		payload.Add "type", "cancel"
 		payload.Add "amount", jsonHelper.Decode(amount)
-		payload.Add "tx_id", tx_id
 		
-		Set cancelTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/cancel", payload )
+		Dim cancelResponse : Set cancelResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/cancel", payload )
+
+		' Check for an error, and then return an appropriate response based on error status
+		If cancelResponse.Exists("message") Then
+			If cancelResponse("metadata")("status") = "CANCELLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " previously cancelled successfully."" }"
+				Response.End
+			Elseif cancelResponse("metadata")("status") = "SETTLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously settled orders cannot be cancelled."" }"
+				Response.End
+			Elseif cancelResponse("metadata")("status") = "REFUNDED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously refunded orders cannot be cancelled."" }"
+				Response.End
+			Elseif refundResponse("metadara")("status")= "PARTIALLY_REFUNDED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously partially refunded orders must be managed in the Portal."" }"
+				Response.End
+			End If
+		End If
+
+		Set cancelTransaction = cancelResponse
 		
 	End Function
 	
@@ -159,8 +199,27 @@ Class BreadPlatformAPI
 			
 		payload.Add "type", "refund"
 		payload.Add "amount", jsonHelper.Decode(amount)
+
+		Dim refundResponse : Set refundResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
+
+		' Check for an error, and then return an appropriate response based on error status
+		If refundResponse.Exists("message") Then
+			If refundResponse("metadata")("status") = "REFUNDED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " previously refunded successfully."" }"
+				Response.End
+			Elseif refundResponse("metadata")("status") = "AUTHORIZED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Order must be settled to be refunded."" }"
+				Response.End
+			Elseif refundResponse("metadata")("status") = "CANCELLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously cancelled orders cannot be refunded."" }"
+				Response.End
+			Elseif refundResponse("metadara")("status")= "PARTIALLY_CANCELLED" Then
+				Response.Write "{ ""success"": false, ""message"": ""Order " & tx_id & " failed to update in Bread Pay Merchant Portal. Previously partially cancelled orders must be managed in the Portal."" }"
+				Response.End
+			End If
+		End If
 		
-		Set refundTransaction = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
+		Set refundTransaction = refundResponse
 		
 	End Function
 
@@ -175,7 +234,7 @@ Class BreadPlatformAPI
 
 		payload.Add "type", "fulfillment"
 		payload.Add "carrier", carrier
-		payload.Add "trackingNumber", trackingNumber 
+		payload.Add "trackingNumber", trackingNumber
 
 		Set updateFulfillmentInfo = makeRequest( "POST", "/api/transaction/" + tx_id + "/fulfillment", payload )
 
@@ -209,14 +268,8 @@ Class BreadPlatformAPI
 			
 		http.Send jsonHelper.Encode( payload )
 		If dct_settings("debug_mode") = "on" Then
-			bread_log.WriteLine( jsonHelper.Decode(http.responseText).Exists("message"))
 			bread_log.WriteLine( "Response: " & http.responseText )
 			bread_log.Close
-		End If
-
-		If jsonHelper.Decode(http.responseText).Exists("message") Then
-			Response.Write "{ ""success"": false, ""message"": ""Order " & payload("tx_id") & " failed to update."" }"
-			Response.End
 		End If
 
 		Set makeRequest = jsonHelper.Decode( http.responseText )

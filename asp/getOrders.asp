@@ -5,7 +5,7 @@
 
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
 
-Set getData = volusion.read("Generic\Orders", "SELECT_Columns=*")
+Set getData = volusion.getAllOrders("GET", "&EDI_Name=Generic\orderHistory")
 
 Set fso_log = Server.CreateObject("Scripting.FileSystemObject")
 Set file_log = fso_log.OpenTextFile(Server.MapPath("/v/bread/asp/log-volusion-api.inc"), 8, True)			
