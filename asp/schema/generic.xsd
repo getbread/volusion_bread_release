@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Generic XSD template file.
+
+    A XSD file named the same as the SQL file is required in schema/Generic folder
+    in order for the query to be executed via the custom Volusion Generic API call.
+
+    For example:
+
+    schema/Generic/BoltPaymentMethod.sql - SQL file
+    schema/Generic/BoltPaymentMethod.xsd - XSD schema file
+
+    Two temporary files are generated in schema/Generic folder every time a custom query
+    needs to be executed, SQL and XSL file, with the same name and different extensions.
+
+    Then the API is called with that name as a generic API name like this
+
+    <volusionApiUrl>?<credentials>&API_Name=Generic\<generated file name>
+
+    After the result XML is stored, the generated files are deleted.
+
+    This file, generic.xsd, is used as a XSD schema file for every query,
+    temporaary copied to schema/Generic under appropriate, random-generated name.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+</xs:schema>
