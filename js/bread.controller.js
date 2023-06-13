@@ -1501,7 +1501,7 @@
 
                                     let totalDiscounts = 0;
                                     params.discounts.forEach(discount => {
-                                        totalDiscounts += discount.unitPrice;
+                                        totalDiscounts += discount.amount;
                                     });
 
                                     totalPrice = subTotal + totalTax + totalShipping - totalDiscounts;
