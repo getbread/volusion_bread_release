@@ -159,21 +159,16 @@ If Not transaction("error") Then
 			Next
 			
 			'' Add any discounts
-			If transaction("discounts") Then
-				For Each line In transaction("discounts")
-				
-					Set order_line = Server.CreateObject("Scripting.Dictionary")
-					
-					order_line.Add "ProductCode", "Discount"
-					order_line.Add "ProductName", line("description")
-					order_line.Add "ProductPrice", Round( line("amount")("value") / 100, 2 ) * -1
-					order_line.Add "Quantity", 1
-					
-					ReDim Preserve order_details( UBound( order_details ) + 1 )
-					Set order_details( UBound( order_details ) ) = order_line
-				
-				Next
-			End If
+			Set order_line = Server.CreateObject("Scripting.Dictionary")
+			
+			order_line.Add "ProductCode", "Discount"
+			order_line.Add "ProductName", "Discount"
+			order_line.Add "ProductPrice", Round( transaction("discountAmount")("value") / 100, 2 ) * -1
+			order_line.Add "TotalPrice", Round( transaction("discountAmount")("value") / 100, 2 ) * -1
+			order_line.Add "Quantity", 1
+			
+			ReDim Preserve order_details( UBound( order_details ) + 1 )
+			Set order_details( UBound( order_details ) ) = order_line
 			
 			new_order.Add "OrderDetails", order_details
 
