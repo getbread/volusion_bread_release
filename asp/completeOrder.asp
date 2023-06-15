@@ -14,6 +14,7 @@ Dim shippingAddress : shippingAddress = Request.Form("shippingAddress")
 Dim contactInfo : contactInfo = Request.Form("contactInfo")
 Dim purchaseItems : purchaseItems = Request.Form("items")
 Dim shippingID : shippingID = request.Form("shippingID")
+Dim discounts : discounts = request.Form("discounts")
 Dim breadPlatform : Set breadPlatform = (New BreadPlatformApi)( dct_settings("bread_platform_api_key"), dct_settings("bread_platform_api_secret") )
 Dim volusion : Set volusion = (New VolusionApi)( "http://" & dct_settings("domain"), dct_settings("apilogin"), dct_settings("apipassword") )
 Dim response_json
@@ -24,7 +25,7 @@ If tx_id = "" Then
 End If
 
 Set authorization = breadPlatform.authorizeTransaction( tx_id, amount )
-Set transaction = breadPlatform.getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems )
+Set transaction = breadPlatform.getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems, discounts )
 
 If Not transaction("error") Then
 
@@ -159,16 +160,20 @@ If Not transaction("error") Then
 			Next
 			
 			'' Add any discounts
-			Set order_line = Server.CreateObject("Scripting.Dictionary")
-			
-			order_line.Add "ProductCode", "Discount"
-			order_line.Add "ProductName", "Discount"
-			order_line.Add "ProductPrice", Round( transaction("discountAmount")("value") / 100, 2 ) * -1
-			order_line.Add "TotalPrice", Round( transaction("discountAmount")("value") / 100, 2 ) * -1
-			order_line.Add "Quantity", 1
-			
-			ReDim Preserve order_details( UBound( order_details ) + 1 )
-			Set order_details( UBound( order_details ) ) = order_line
+				For Each line in transaction("discounts")
+					Set order_line = Server.CreateObject("Scripting.Dictionary")
+					
+					order_line.Add "DiscountValue", Round( line("amount") / 100, 2 )
+					order_line.Add "Quantity", 1
+					order_line.Add "ProductCode", line("productCode")
+					order_line.Add "ProductName", line("description")
+					order_line.Add "ProductPrice", Round( (line("amount") / 100) * -1, 2 )
+					order_line.Add "TotalPrice", Round( (line("amount") / 100) * -1, 2 )
+					
+					ReDim Preserve order_details( UBound( order_details ) + 1 )
+					Set order_details( UBound( order_details ) ) = order_line
+				Next
+
 			
 			new_order.Add "OrderDetails", order_details
 

@@ -1372,7 +1372,14 @@
                                         return line;
                                     });
 
-                                    breadData.items = JSON.stringify(breadData.items)
+                                    breadData.items = JSON.stringify(breadData.items);
+
+                                    breadData.discounts = breadParams.params.discounts.map(function (item) {
+                                        var line = Object.assign({}, item);
+                                        return line;
+                                    });
+
+                                    breadData.discounts = JSON.stringify(breadData.discounts);
 
                                     $.ajax({
                                         method: 'post',
@@ -1640,7 +1647,8 @@
                             if (price_in_cents < 0) {
                                 cart_discounts.push({
                                     description: name + ' (' + itemSku + ')',
-                                    amount: Math.abs(price_in_cents)
+                                    amount: Math.abs(price_in_cents),
+                                    productCode: itemSku
                                 });
                             } else if (price_in_cents > 0) {
                                 cart_surcharges.push({

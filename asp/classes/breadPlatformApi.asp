@@ -74,15 +74,16 @@ Class BreadPlatformAPI
 	'
 	' @param	string			tx_id			The bread transaction id
 	' @return	Dictionary						The api JSON response
-	Public Function getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems )
-	
+	Public Function getTransaction( tx_id, billingAddress, shippingAddress, contactInfo, purchaseItems, discounts )
+
 		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
+		
 		payload.Add "billingAddress", jsonHelper.Decode(billingAddress)
 		payload.Add "shippingAddress", jsonHelper.Decode(shippingAddress)
 		payload.Add "contactInfo", jsonHelper.Decode(contactInfo)
 		payload.Add "items", jsonHelper.Decode(purchaseItems)
-		payload.Add "shippingID", shippingID
-		
+		payload.Add "discounts", jsonHelper.Decode(discounts)
+
 		Set getTransaction = getRequest( "GET", "/api/transaction/" + tx_id, payload )
 		
 	End Function
@@ -308,6 +309,7 @@ Class BreadPlatformAPI
 		breadResponse.Add "shippingContact", payload("shippingAddress")
 		breadResponse.Add "contactInfo", payload("contactInfo")
 		breadResponse.Add "lineItems", payload("items")
+		breadResponse.Add "discounts", payload("discounts")
 
 		If dct_settings("debug_mode") = "on" Then
 			bread_log.WriteLine( "Response: " & jsonHelper.Encode(breadResponse) )
