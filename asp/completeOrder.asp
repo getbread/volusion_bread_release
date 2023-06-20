@@ -275,7 +275,7 @@ If Not transaction("error") Then
 				
 				emailer.smtpServer   = "smtp.sendgrid.net"
 				emailer.smtpEmail    = "apikey"
-				emailer.smtpPassword = "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"
+				emailer.smtpPassword = "xxxx"
 				
 				emailer.EmailSubject = "Your order (#" & tx_id & ") from " & dct_settings("storename") 'this was order_id.text also, but i swapped it out so it would work
 				emailer.EmailFrom    = dct_settings("merchantfrom")
