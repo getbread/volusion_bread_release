@@ -30,9 +30,9 @@ Bread Pay / Volusion Integration Guide
 10. Once you've installed Bread Pay via SFTP, your Bread Pay Dashboard can be found at `your-store-url.com/v/bread/dashboard`. Switch out "your-store-url" for the homepage of your Volusion store website. Follow the steps for each the Bread Pay Integration fields below to finish setting up your store.
    
 **Notes:**
-If the Volusion site being installed to does not contain a reference to a version of
-jQuery greater than or equal to 1.11.x in the window.jQuery variable, the following 
-code must also be added just before the bread.controller.js script tag.
+Buyers will recieve a confirmation directly from Bread Pay when they complete checkout. If you would like to recieve a notification email when a buyer makes a purchase via Bread Pay, you can configure your email settings in the Bread Pay Merchant Portal under Account Settings > Email Notifications
+
+If the Volusion site being installed to does not contain a reference to a version of jQuery greater than or equal to 1.11.x in the window.jQuery variable, the following code must also be added just before the bread.controller.js script tag.
 
 ```html
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -129,12 +129,6 @@ To get your api url, you must do a sample export from your volusion admin:
 * Then click the "Run" button in the top right of the page
 * Copy the provided url and then paste it into the volusion "API URL" configuration field on the bread configuration dashboard.
 * The Domain, Login, and Password will be filled in automatically
-
-**Send Order Confirmation From**
-Email confirmations will be sent to your customers from this address when they complete a Bread Pay checkout
-
-**Send Merchant Order Confirmation To**
-When a new order is placed via Bread Pay, a confirmation email will also be sent to this address
 
 ## Service Tools
 **Debug Tools**

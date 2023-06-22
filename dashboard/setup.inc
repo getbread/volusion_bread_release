@@ -64,9 +64,6 @@ Sub Save_Settings()
 		file_setup.WriteLine("apipassword|" & Request.Form("apipassword"))
 	End If
 
-	file_setup.WriteLine("merchantfrom|" & Request.Form("merchantfrom"))
-	file_setup.WriteLine("merchantemail|" & Request.Form("merchantemail"))
-
 	' Bread Settings
 	file_setup.WriteLine("bread_env|" & Request.Form("bread_env"))
 	file_setup.WriteLine("bread_platform_api_key|" & Request.Form("bread_platform_api_key"))

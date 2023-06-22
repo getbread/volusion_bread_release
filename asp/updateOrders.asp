@@ -2,7 +2,6 @@
 <!--#include file="./classes/jsonHelper.asp"-->
 <!--#include file="./classes/breadPlatformApi.asp"-->
 
-
 <%
 
 Dim jsonHelper : Set jsonHelper = New VbsJson

@@ -2,7 +2,6 @@
 <!--#include file="./classes/jsonHelper.asp"-->
 <!--#include file="./classes/breadPlatformApi.asp"-->
 <!--#include file="./classes/volusionApi.asp"-->
-<!--#include file="./classes/SMTP.asp"-->
 
 <%
 
@@ -198,94 +197,10 @@ If Not transaction("error") Then
 					processed_response.Add "transaction", "unsettled"
 				End If
 
-				' The elements being updated in the commented out lines below don't seem to exist in 2.0
-				' order_id comes out as having type "Nothing" so order_id.text does not exist
-				
-				'' Update the bread api with the order id
-				' Set payload = Server.CreateObject("Scripting.Dictionary")
-				' payload.Add "merchantOrderId", order_id.text
-
-				' breadPlatform.updateTransaction tx_id, payload
-
 				processed_response.Add "success", True
-				processed_response.Add "order_id", tx_id 'this was order_id.text also, but i swapped it out so it would work
+				processed_response.Add "order_id", tx_id
 				
 				'' SUCCESS !
-
-				Set emailer = new SMTP
-				Set emailTokens = Server.CreateObject("Scripting.Dictionary")
-				
-				Dim SubTotal : SubTotal = 0
-				For Each line In order_details
-					product_rows = product_rows & "<tr><td>" & line("ProductCode") & "</td><td>" & Replace(Replace(line("ProductName"), "<![CDATA[", ""), "]]>", "") & "<br></td><td>" & line("Quantity") & " @ " & FormatCurrency( line("ProductPrice"), 2 ) & "</td></tr>"
-					SubTotal = SubTotal + ( line("ProductPrice") * line("Quantity") )
-				Next
-				
-				emailTokens.Add "CompanyLogo", dct_settings("store_logo_url")
-				emailTokens.Add "StoreName", dct_settings("storename")
-				emailTokens.Add "HomeURL", "http://" & Request.ServerVariables("SERVER_NAME")
-				emailTokens.Add "CustomerID", new_order("CustomerID")
-				emailTokens.Add "OrderNo", tx_id 'this was order_id.text also, but i swapped it out so it would work
-				emailTokens.Add "OrderDate", Year(Now()) & "-" & Month(Now()) & "-" & Day(Now())
-				emailTokens.Add "OrderTime", Hour(Now()) & ":" & Minute(Now()) & ":" & Second(Now())
-				emailTokens.Add "Bill_CompanyName", ""
-				emailTokens.Add "Bill_FirstName", new_order("BillingFirstName")
-				emailTokens.Add "Bill_LastName", new_order("BillingLastName")
-				emailTokens.Add "Bill_Address1", new_order("BillingAddress1")
-				emailTokens.Add "Bill_Address2", new_order("BillingAddress2")
-				emailTokens.Add "Bill_City", new_order("BillingCity")
-				emailTokens.Add "Bill_State", new_order("BillingState")
-				emailTokens.Add "Bill_PostalCode", new_order("BillingPostalCode")
-				emailTokens.Add "Bill_Country", ""
-				emailTokens.Add "Bill_PhoneNumber", new_order("BillingPhoneNumber")
-				emailTokens.Add "EmailAddress", transaction("contactInfo")("email")
-				emailTokens.Add "Ship_CompanyName", ""
-				emailTokens.Add "Ship_FirstName", new_order("ShipFirstName")
-				emailTokens.Add "Ship_LastName", new_order("ShipLastName")
-				emailTokens.Add "Ship_Address1", new_order("ShipAddress1")
-				emailTokens.Add "Ship_Address2", new_order("ShipAddress2")
-				emailTokens.Add "Ship_City", new_order("ShipCity")
-				emailTokens.Add "Ship_State", new_order("ShipState")
-				emailTokens.Add "Ship_PostalCode", new_order("ShipPostalCode")
-				emailTokens.Add "Ship_Country", ""
-				emailTokens.Add "Ship_PhoneNumber", new_order("ShipPhoneNumber")
-				emailTokens.Add "DisplayPaymentMethod", "Bread Financing"
-				emailTokens.Add "ShippingMethod", transaction("shippingID")
-				emailTokens.Add "OrderDetails", "<table width='100%'>" &_ 
-					"<tr>" &_ 
-						"<td><strong>Sku</strong></td>" &_ 
-						"<td><strong>Product Name<strong></td>" &_ 
-						"<td><strong>Quantity Ordered</strong></td>" &_ 
-					"</tr>" &_
-					product_rows &_
-					"<tr>" &_ 
-						"<td colspan='3' align='right'>" &_ 
-							"<div style='align:right'>Subtotal: " & FormatCurrency( SubTotal, 2 ) & "</div>" &_
-							"<div style='align:right'>Tax: " & FormatCurrency( Round( transaction("totalTax") / 100, 2 ) ) & "</div>" &_
-							"<div style='align:right'>Shipping: " & FormatCurrency( Round( transaction("shippingCost") / 100, 2 ) ) & "</div>" &_
-							"<div style='align:right'>Grand Total: " & FormatCurrency( Round( transaction("adjustedTotal") / 100, 2 ) ) & "</div>" &_
-						"</td>" &_
-					"</tr>" &_
-				"</table>"
-				emailTokens.Add "Order_Comments", ""
-				emailTokens.Add "Custom_Fields", ""
-				
-				'' The vsmtp class raises an error if emails fail to send
-				On Error Resume Next
-				
-				emailer.smtpServer   = "smtp.sendgrid.net"
-				emailer.smtpEmail    = "apikey"
-				emailer.smtpPassword = "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"
-				
-				emailer.EmailSubject = "Your order (#" & tx_id & ") from " & dct_settings("storename") 'this was order_id.text also, but i swapped it out so it would work
-				emailer.EmailFrom    = dct_settings("merchantfrom")
-				emailer.EmailTo      = transaction("billingContact")("email")
-				emailer.LoadTemplate "OrderConfirmation_To_Customer", emailTokens
-				emailer.Send()
-				
-				emailer.EmailSubject = "New order (#" & tx_id & ") at " & dct_settings("storename") 'this was order_id.text also, but i swapped it out so it would work
-				emailer.EmailTo      = dct_settings("merchantemail")
-				emailer.Send()
 				
 				If dct_settings("debug_mode") = "on" Then
 					Set ajax_fso = Server.CreateObject("Scripting.FileSystemObject")

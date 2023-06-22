@@ -211,20 +211,6 @@
 		</div>
 	</div>
 	<br>
-	<div class="form-group">
-        <label for="merchantfrom" class="col-md-2 control-label">Send Order Confirmation From:</label>
-        <div class="col-md-6">
-            <input type="email" id="merchantfrom" name="merchantfrom" class="form-control" placeholder="user@example.com" value="<% = dct_setup("merchantfrom") %>">
-        </div>
-    </div>
-	<div class="form-group">
-		<label for="merchantemail" class="col-md-2 control-label">
-			Send Merchant Order Confirmation To:</a>
-		</label>
-		<div class="col-md-6">
-			<input type="text" id="merchantemail" name="merchantemail" class="form-control" value="<% = dct_setup("merchantemail") %>">
-		</div>
-	</div>
 	<h3>Service Tools</h3>
 	<div class="form-group">
 		<label class="col-md-2 control-label">
