@@ -1847,6 +1847,8 @@
                 sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
                 sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
                 sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
+                breadEnv = settings.environment;
+                api_key = settings.platform_api_key;
                 initPage();
             })
         }
