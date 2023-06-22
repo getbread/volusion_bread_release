@@ -1839,6 +1839,10 @@
         }
         else {
             $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
+                sessionStorage.setItem('bread-environment', settings.environment);
+                sessionStorage.setItem('bread-api-key', settings.platform_api_key);
+                sessionStorage.setItem('bread-disabled', settings.disable_autoload);
+                sessionStorage.setItem("integration-key", settings.integration_key);
                 sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
                 sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
                 sessionStorage.setItem("bread-disable-category-button", settings.disable_category_button);
