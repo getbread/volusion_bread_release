@@ -984,7 +984,7 @@
              */
             insertButton: function (button) {
 
-                const addToCartButton = $('#btn_addtocart')
+                const addToCartButton = $("input[name$='addtocart']")
                 button.insertAfter(addToCartButton)
 
             },
