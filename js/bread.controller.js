@@ -880,11 +880,13 @@
 
                 const refreshBread = function () {
 
+                    let qty;
+
                     const qtySelector = $('input[name*="QTY"]');
                     if (qtySelector[0] != undefined) {
-                        let qty = qtySelector[0].value;
+                        qty = qtySelector[0].value;
                     } else {
-                        let qty = 1;
+                        qty = 1;
                     }
 
 
