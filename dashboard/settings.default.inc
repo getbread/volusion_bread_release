@@ -21,3 +21,4 @@ bread_disable_category_button|
 debug_mode|
 disable_autoload|
 completed_order_status|New
+bread_replace_checkout_button|on

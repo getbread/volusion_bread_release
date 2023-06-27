@@ -176,6 +176,15 @@
 			</label>
 		</div>
 	</div>
+	<div class="form-group">
+		<label class="col-md-2 control-label">Replace Volusion Checkout Button with Bread Pay Button when Buyer Chooses Bread Pay at Checkout</label>
+		<div class="col-md-6 checkbox">
+			<label for="bread_replace_checkout_button" class="control-label" style="margin-bottom: 15px; text-align:left;">
+				<input type="checkbox" id="bread_replace_checkout_button" name="bread_replace_checkout_button" value="on"<% If dct_setup("bread_replace_checkout_button") = "on" Then %> checked="checked"<% End If %> />
+				If this box is checked, when a buyer chooses Bread Pay from your list of Payment Options, the existing Place Order Button will be replaced on the checkout page with a Bread Pay specific button. If this box is not checked, a second button for Bread Pay will appear on the checkout page, which buyers must click to open and check out with Bread Pay. Bread Financial recommends checking this box to avoid confusion for your buyers, but this will not work with some customized Volusion sites. See the README in the Bread Pay Plugin directory you downloaded or <a href="https://platform-docs.breadpayments.com/bread-onboarding/docs/volusion-integration" target="_blank">the Volusion Integration documentation here</a> for details on how to properly configure your Bread Pay Button.
+			</label>
+		</div>
+	</div>
 	<h3>Volusion API</h3>
 	<div class="form-group">
 		<label for="storename" class="col-md-2 control-label">Store Name</label>

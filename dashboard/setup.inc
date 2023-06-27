@@ -83,6 +83,7 @@ Sub Save_Settings()
 	file_setup.WriteLine("debug_mode|" & Request.Form("debug_mode"))
 	file_setup.WriteLine("disable_autoload|" & Request.Form("disable_autoload"))
 	file_setup.WriteLine("completed_order_status|" & Request.Form("completed_order_status"))
+	file_setup.WriteLine("bread_replace_checkout_button|" & Request.Form("bread_replace_checkout_button"))
 	
 	file_setup.Close
 
