@@ -3,19 +3,24 @@ Bread Pay / Volusion Integration Guide
 
 # Installation
 
-1. Unzip and upload the contents of volusion_bread_release.zip to the volusion store via SFTP into a folder named "bread".
+1. Download the most recent release of the Bread Pay plugin by clicking the source code button [here](https://github.com/getbread/volusion_bread_release/releases). Unzip and upload the contents of volusion_bread_release.zip to the volusion store via SFTP and name the base folder "bread".
    - Here are details on how to set up and use your Volusion SFTP account: https://volusionhome.my.site.com/knowledgebase/s/article/UsingYourVolusionFTPSFTPAccount
-2. Rename the bread/dashboard/settings.default.inc to bread/dashboard/settings.inc
-3. In the schema folder, there are two files called `orderHistory.sql` and `orderHistory.xsd`. Use the SFTP program to add those to /vspfiles/schema/Generic.
-4. Log into the volusion administration screen.
-5. You can edit the theme template via: Design > File Editor > template_xxx.html
-6. Add the following script tag to the bottom of the template just before the
-   closing `</body>` tag.
+2. In your SFTP service, rename the file bread/dashboard/settings.default.inc to bread/dashboard/settings.inc
 
+![Screenshot of Filezilla SFTP service pointing at specific files named in point two above](/images/filezilla_example.png "Filezilla SFTP Example")
+
+3. In the asp/schema folder, there are two files called `orderHistory.sql` and `orderHistory.xsd`. Use the SFTP program to add those to /vspfiles/schema/Generic.
+
+![Screenshot of Filezilla SFTP service pointing at specific files named in point three above](/images/orderHistory_example.png "Order History Example")
+
+4. Log into your Volusion admin dashboard.
+5. In your theme editor under Design > File Editor > template_xxx.html, add the following to the bottom of the template just before the closing `</body>` tag.
 
 ```html
 <script type="text/javascript" src="/v/bread/js/bread.controller.js"></script>
 ```
+
+![Animation of mouse clicking on template and then showing where to copy the Bread Pay Script](/images/bread_script_example.gif "Copy Bread Pay Script to template file here")
 
 7. Add the following lines to the top of the template, just before the closing `</head>` tag:
 
@@ -25,14 +30,18 @@ Bread Pay / Volusion Integration Guide
 <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 ```
 
+![Screenshot of Volusion File Editor](/images/bread_script_example.gif "Copy Bread Pay stylesheet to template file here")
+
 8. Make sure your store is set to use Standard Checkout. In your Volusion dashboard, go to Settings > Checkout and make sure "Premium Checkout" is *not* checked.
-9. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ - Pay Over Time" without the quotation marks. Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings.
+
+9. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ - Pay Over Time" without the quotation marks. This must be copied in without formatting so that Volusion can read it correctly. One easy way to remove any possible formatting is to copy from here into your browser URL bar, and then from there into Volusion.  Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings. 
+
 10. Once you've installed Bread Pay via SFTP, your Bread Pay Dashboard can be found at `your-store-url.com/v/bread/dashboard`. Switch out "your-store-url" for the homepage of your Volusion store website. Follow the steps for each the Bread Pay Integration fields below to finish setting up your store.
    
 **Notes:**
-If the Volusion site being installed to does not contain a reference to a version of
-jQuery greater than or equal to 1.11.x in the window.jQuery variable, the following 
-code must also be added just before the bread.controller.js script tag.
+Buyers will recieve a confirmation directly from Bread Pay when they complete checkout. If you would like to recieve a notification email when a buyer makes a purchase via Bread Pay, you can configure your email settings in the Bread Pay Merchant Portal under Account Settings > Email Notifications
+
+If the Volusion site being installed to does not contain a reference to a version of jQuery greater than or equal to 1.11.x in the window.jQuery variable, the following code must also be added just before the bread.controller.js script tag.
 
 ```html
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -76,8 +85,8 @@ The authorization to the bread finance api must be obtained using a basic author
 
 Your api key is the username and your secret key is the password. Copy any paste the authorization string starting with the word "Basic".
 
-**Payment Method ID and Name**
-In Volusion under Settings > Payment, create a payment type for your customers to use to check out using Bread Pay. Click on "View List" in the top right to see the ID number. Copy the ID and Name into these fields. They will be reflected on your Volusion store checkout page.
+**Payment Method ID**
+In Volusion under Settings > Payment, create a payment type for your customers to use to check out using Bread Pay. Click on "View List" in the top right to see the ID number. Copy the ID into this field.
 
 ## Bread Pay Settings
 These settings are not required, but allow you to customize your customers' experience with Bread Pay in your store. 
@@ -116,6 +125,9 @@ Checking this box will prevent the Bread Pay button from showing up on the custo
 **Disable Category Page Button**
 Checkout this box will prevent the Bread Pay button from appearing under each product on your category pages, where multiple products are listed.
 
+**Replace Volusion Checkout Button with Bread Pay Button when Buyer Chooses Bread Pay at Checkout**
+You have two options for how your customers will see and check out with Bread Pay. If this box is not checked, a second button will appear prompting them to click to check out with Bread, in the same way as it displays on your product detail and cart pages. If you check this box, when a customer chooses Bready Pay from the dropdown of payment options on the Checkout Page, the standard Place Order Button will disappear and be replaced with the Check out with Bread Pay button. Make sure that your Bread Pay payment method type that you created as part of your setup under Settings > Payment is properly configured and turned on. See Step 9 under Installation above for detailed instructions. We recommend checking this box to avoid confusion for your customers on where to click to check out, but it can sometimes have trouble loading on more heavily customized Volusion websites.
+
 ## Volusion API
 These fields are required in order to connect to your Volusion Store, as well as to make sure that your customers get email confirmations from Volusion when they checkout with Bread Pay.
 
@@ -129,12 +141,6 @@ To get your api url, you must do a sample export from your volusion admin:
 * Then click the "Run" button in the top right of the page
 * Copy the provided url and then paste it into the volusion "API URL" configuration field on the bread configuration dashboard.
 * The Domain, Login, and Password will be filled in automatically
-
-**Send Order Confirmation From**
-Email confirmations will be sent to your customers from this address when they complete a Bread Pay checkout
-
-**Send Merchant Order Confirmation To**
-When a new order is placed via Bread Pay, a confirmation email will also be sent to this address
 
 ## Service Tools
 **Debug Tools**

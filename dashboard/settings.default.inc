@@ -3,8 +3,6 @@ storename|
 domain|
 apilogin|
 apipassword|
-merchantfrom|
-merchantemail|
 bread_env|sandbox
 bread_platform_api_key|
 bread_platform_api_secret|
@@ -23,3 +21,4 @@ bread_disable_category_button|
 debug_mode|
 disable_autoload|
 completed_order_status|New
+bread_replace_checkout_button|on
