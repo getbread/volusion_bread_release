@@ -716,7 +716,7 @@
             /**
              * @var	string 		Button HTML
              */
-            buttonHtml: '<div data-role="bread-checkout" class="bread-checkout-btn"></div>',
+            buttonHtml: '<div data-role="bread-checkout" class="bread-checkout-btn" style="border: 1px solid black; padding: 5px; text-align: center"></div>',
 
             /**
              * Make bread buttons
@@ -856,7 +856,7 @@
             /**
              * @var	string 		Button HTML
              */
-            buttonHtml: '<tr><td><div id="bread-checkout-btn" class="bread-checkout-btn" style="margin: 5px auto;"></div></td></tr>',
+            buttonHtml: '<tr><td><div id="bread-checkout-btn" class="bread-checkout-btn" style="margin: 5px auto; border: 1px solid black; padding: 5px; text-align: center;"></div></td></tr>',
 
             /**
              * Make bread buttons
@@ -1099,7 +1099,7 @@
             /**
              * @var	string 		Button HTML
              */
-            buttonHtml: '<tr><td colspan="2"><div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px;"></div></td></tr>',
+            buttonHtml: '<tr><td colspan="2"><div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px; border: 1px solid black; padding: 5px; text-align: center "></div></td></tr>',
 
             /**
              * @var	boolean		Clear cart after checkout
@@ -1303,7 +1303,7 @@
             /**
              * @var	string 		Button HTML
              */
-            buttonHtml: '<div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px;"></div>',
+            buttonHtml: '<div id="bread-checkout-btn" class="bread-checkout-btn" style="float:right; width: 300px; border: 1px solid black; padding: 5px; text-align: center"></div>',
 
             /**
              * @var	boolean		Clear cart after checkout
