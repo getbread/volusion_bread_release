@@ -1374,7 +1374,9 @@
                                          */
 
                                         let breadData = breadParams.data;
-                                        breadData.tx_id = response.transactionID
+                                        breadData.tx_id = response.transactionID;
+                                        breadData.contactInfo.email = response.billingContact.email; // when a buyer is logged in, their email will be undefined in the params, so we double check it here
+                                        breadData.contactInfo = JSON.stringify(breadData.contactInfo);
 
                                         // Add in any variable options selected for the product
                                         $.each(breadParams.params.items, function (i, item) {
@@ -1421,7 +1423,6 @@
                                     });
 
                                     window.BreadPayments.init();
-                                    breadInit = true;
                                 });
 
                             } else if (shippingChoice === "0" || !shippingChoice) {
@@ -1440,9 +1441,10 @@
                                     alert("Please choose a shipping option");
                                 } else {
                                     // Open the Bread Pay modal and begin checkout.
-                                    const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Please Wait...</div>'
+                                    const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Please Wait...</div>';
                                     $("#bread-checkout-btn").before(loadingHTML);
                                     breadModalOpen();
+                                    breadInit = true;
                                 }
                             });
                         } else {
@@ -1607,7 +1609,7 @@
                                     amount: JSON.stringify({ currency: "USD", value: totalPrice }),
                                     billingAddress: JSON.stringify(params.billingAddress),
                                     shippingAddress: JSON.stringify(params.shippingAddress),
-                                    contactInfo: JSON.stringify(contactInfo)
+                                    contactInfo: contactInfo // we need to add another item to this object later, so we stringify it then.
                                 };
 
                                 const response = { "buyer": buyer, "placement": placement, "data": data, "params": params }
@@ -1777,7 +1779,7 @@
                                         firstName: params.givenName,
                                         lastName: params.familyName,
                                         fullName: `${params.givenName} ${params.familyName}`,
-                                        email: params.email,
+                                        email: response.billingContact.email,
                                         phone: params.phone
                                     }
 
