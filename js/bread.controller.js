@@ -1654,7 +1654,7 @@
 
                     $.when(self.getCheckoutParams()).done(function (params) {
                         const shippingChoice = self.getShippingChoice(params.taxAndShipping.shipping);
-                        if ($('input[name="ShipResidential"]').is(':checked')) {
+                        if ($('input[name="ShipResidential"]').is(':checked') || $('input[name="ShipResidential"]').length <= 1) {
 
                             if (shippingChoice !== "TBD" && shippingChoice !== undefined) {
 
