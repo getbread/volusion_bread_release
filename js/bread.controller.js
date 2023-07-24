@@ -1340,7 +1340,7 @@
                         * This prevents a possible bug if the buyer switches back and forth between Bread Pay and other payment options.
                         * It also prevents the buyer from opening the modal without a shipping option chosen.
                         */
-                        if ($('input[name="ShipResidential"]').is(':checked')) {
+                        if ($('input[name="ShipResidential"]').is(':checked') || $('input[name="ShipResidential"]').length <= 1) {
                             if (!breadInit && shippingChoice !== "0" && shippingChoice) {
                                 /**
                                  * Connect to and initialize the Bread SDK
