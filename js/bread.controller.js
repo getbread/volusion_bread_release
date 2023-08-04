@@ -2083,11 +2083,9 @@
 
     /* Initialize when page is loaded */
     $(document).ready(function () {
-        let breadEnv = sessionStorage.getItem('bread-environment');
-        let api_key = sessionStorage.getItem('bread-api-key');
-        const integrationKey = sessionStorage.getItem("integration-key");
-
         const initPage = function () {
+            let breadEnv = sessionStorage.getItem('bread-environment');
+            const integrationKey = sessionStorage.getItem("integration-key");
             // Check for the user's environment
             // Append the appropriate script to the page
             let script = document.createElement("script");
@@ -2137,7 +2135,6 @@
         $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
             sessionStorage.setItem('bread-environment', settings.environment);
             sessionStorage.setItem('integration-key', settings.integration_key);
-            sessionStorage.setItem('bread-api-key', settings.platform_api_key);
             sessionStorage.setItem('bread-disabled', settings.disable_autoload);
             sessionStorage.setItem("bread-disable-product-button", settings.disable_product_button);
             sessionStorage.setItem("bread-disable-cart-button", settings.disable_cart_button);
@@ -2149,7 +2146,6 @@
             sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
             sessionStorage.setItem("bread-replace-checkout-button", settings.bread_replace_checkout_button)
             breadEnv = settings.environment;
-            api_key = settings.platform_api_key;
             initPage();
         })
     });
