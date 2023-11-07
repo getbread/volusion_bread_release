@@ -130,7 +130,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "settle"
 		payload.Add "amount", jsonHelper.Decode(amount)
 
-		Dim settleResponse : Set settleResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
+		Dim settleResponse : Set settleResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/settle", payload )
 
 		' Check for an error, and then return an appropriate response based on error status
 		If settleResponse.Exists("message") Then

@@ -191,7 +191,7 @@ If Not transaction("error") Then
 				processed_response.Add "order", new_order
 
 				If dct_settings("bread_payment_settle") = "on" Then
-					breadPlatform.settleTransaction( tx_id )
+					Set settle = breadPlatform.settleTransaction( tx_id, amount )
 					processed_response.Add "transaction", "settled"
 				Else
 					processed_response.Add "transaction", "unsettled"
