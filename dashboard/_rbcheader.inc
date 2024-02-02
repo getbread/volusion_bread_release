@@ -13,14 +13,14 @@
 		  <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
 		<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic,500italic,700italic" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="styles.css" />
+		<link rel="stylesheet" href="./css/rbc_styles.css" />	
 	</head>
 	<body>
 		
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="container">
 				<div class="navbar-header">
-					<img src="logo.png" />
+					<img src="./images/rbc_payplan_logo.png" />
 				</div>
 				<% If Session("isauthorized") = True Then %>
 				<ul class="nav navbar-nav">
