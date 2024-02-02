@@ -1,5 +1,4 @@
 <!--#include file="load_settings.inc"-->
-<!--#include file="load_tenant_settings.inc"-->
 <!--#include file="./classes/jsonHelper.asp"-->
 <!--#include file="./classes/breadPlatformApi.asp"-->
 
