@@ -1,5 +1,4 @@
 <!--#include file="global.inc"-->
-<!--#include file="../asp/load_tenant_settings.inc"-->
 <%
 
 Dim login_error
@@ -24,11 +23,7 @@ End If
 
 %>
 
-<% If tnt_settings("tenant_prefix") = "rbc" Then %>
-	<!--#include file="_rbcheader.inc"-->
-<% Elseif tnt_settings("tenant_prefix") = "bread" Then %>
-	<!--#include file="_breadpayheader.inc"-->
-<% End If %>
+<!--#include file="_header.inc"-->
 
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">

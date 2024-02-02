@@ -1,6 +1,6 @@
 <!--#include file="global.inc"-->
 
-<!--#include file="_breadpayheader.inc"-->
+<!--#include file="_header.inc"-->
 
 <h1>Welcome</h1>
 

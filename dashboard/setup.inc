@@ -1,7 +1,7 @@
 <%
 
 Dim setup_file_path : setup_file_path = (base_path & "settings.inc")
-Dim css_file_path : css_file_path = (RegexReplace(base_path, "\w+\\$", "") & "css\breadpay_styles.css")
+Dim css_file_path : css_file_path = (RegexReplace(base_path, "\w+\\$", "") & "css\styles.css")
 Dim dct_setup : Set dct_setup = CreateObject("Scripting.Dictionary")
 Dim setup_errors
 
