@@ -227,11 +227,6 @@
         cart_cookie: 'CartID5',
 
         /**
-         * @var string		Billing country
-         */
-        billing_country: 'United States',
-
-        /**
          * @var	boolean		Clear cart after checkout
          */
         clearCart: false,
@@ -507,7 +502,6 @@
                         ShipResidential: 'Y',
                         ShipPostalCode: shippingContact.zip,
                         ShipState: shippingContact.state,
-                        ShipCountry: self.billing_country,
                         hidden_btncalc_shipping: 'this_button_was_pressed'
                     }
                 }).done(function (data) {
@@ -533,7 +527,6 @@
                                         ShipResidential: 'Y',
                                         ShipPostalCode: shippingContact.zip,
                                         ShipState: shippingContact.state,
-                                        ShipCountry: self.billing_country,
                                         ShippingSpeedChoice: option.val()
                                     }
                                 }).done(function (data) {
@@ -726,6 +719,13 @@
             makeBread: function (integrationKey) {
                 var self = this;
 
+                var Payments;
+                if (sessionStorage.getItem("tenant_prefix") === "rbc") {
+                    Payments = window.RBCPayPlan;
+                } else {
+                    Payments = window.BreadPayments;
+                }
+
                 /** 
                  * Bread uses [placements] to fill in information about the product and apply it to the pre-qualification button.
                  * In order to get that information, we get the list of divs from the page that match the ID "v-product", 
@@ -754,6 +754,7 @@
                         if (self.skuCheck(product_code)) {
                             button.attr('id', buttonId);
                             product.append(button);
+                            const currency = sessionStorage.getItem("currency");
 
                             placements.push({
                                 financingType: "installment",
@@ -763,23 +764,23 @@
                                     items: [],
                                     subTotal: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalDiscounts: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalShipping: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalTax: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalPrice: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                 }
                             });
@@ -787,17 +788,16 @@
                     };
                 });
 
-                window.BreadPayments.setup({
+                Payments.setup({
                     integrationKey: integrationKey
                 });
 
-                window.BreadPayments.registerPlacements(placements);
+                Payments.registerPlacements(placements);
 
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-
-                window.BreadPayments.__internal__.init();
+                Payments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                Payments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                Payments.on('INSTALLMENT:INITIALIZED', () => { });
+                Payments.__internal__.init();
             },
 
             /**
@@ -866,6 +866,14 @@
             makeBread: function (integrationKey) {
                 var self = this;
 
+                var Payments;
+                if (sessionStorage.getItem("tenant_prefix") === "rbc") {
+                    Payments = window.RBCPayPlan;
+                } else {
+                    Payments = window.BreadPayments;
+                }
+
+
                 // Inserts the bread button underneath the Product
                 var button = $(this.buttonHtml);
                 this.insertButton(button);
@@ -902,6 +910,7 @@
                         if (self.skuCheck(product_code)) {
                             // Check if the product page has options. If yes, display only "Low Monthly Payments"
                             if (!self.optionsCheck()) {
+                                const currency = sessionStorage.getItem("currency")
                                 placements.push({
                                     financingType: "installment",
                                     domID: "bread-checkout-btn",
@@ -910,23 +919,23 @@
                                         items: [],
                                         subTotal: {
                                             value: price,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                         totalDiscounts: {
                                             value: 0,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                         totalShipping: {
                                             value: 0,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                         totalTax: {
                                             value: 0,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                         totalPrice: {
                                             value: price,
-                                            currency: "USD",
+                                            currency: currency,
                                         },
                                     }
                                 });
@@ -940,17 +949,15 @@
 
 
 
-                            window.BreadPayments.setup({
+                            Payments.setup({
                                 integrationKey: integrationKey
                             });
 
-                            window.BreadPayments.registerPlacements(placements);
-
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                            window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-
-                            window.BreadPayments.__internal__.init();
+                            Payments.registerPlacements(placements);
+                            Payments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                            Payments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                            Payments.on('INSTALLMENT:INITIALIZED', () => { });
+                            Payments.__internal__.init();
 
                         };
                     };
@@ -1124,6 +1131,14 @@
                 const button = $(this.buttonHtml);
                 this.insertButton(button);
 
+                var Payments;
+                if (sessionStorage.getItem("tenant_prefix") === "rbc") {
+                    Payments = window.RBCPayPlan;
+                } else {
+                    Payments = window.BreadPayments;
+                }
+
+
                 const placements = [];
 
                 $.when(this.getCheckoutParams()).done(function (params) {
@@ -1147,6 +1162,7 @@
                     // Check that the price is between min and max set prices
                     if (self.minMaxCheck(price)) {
                         if (excluded_products.length === 0) {
+                            const currency = sessionStorage.getItem("currency");
 
                             placements.push({
                                 financingType: "installment",
@@ -1156,38 +1172,36 @@
                                     items: [],
                                     subTotal: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalDiscounts: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalShipping: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalTax: {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                     totalPrice: {
                                         value: price,
-                                        currency: "USD",
+                                        currency: currency,
                                     },
                                 }
                             });
 
-                            window.BreadPayments.setup({
+                            Payments.setup({
                                 integrationKey: integrationKey
                             });
 
-                            window.BreadPayments.registerPlacements(placements);
-
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                            window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
-                            window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-
-                            window.BreadPayments.__internal__.init();
+                            Payments.registerPlacements(placements);
+                            Payments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                            Payments.on('INSTALLMENT:APPLICATION_CHECKOUT', () => { });
+                            Payments.on('INSTALLMENT:INITIALIZED', () => { });
+                            Payments.__internal__.init();
                         };
                     };
                 });
@@ -1317,17 +1331,25 @@
 
             makeBreadReplaceButton: function (integrationKey) {
                 const self = this;
-
+                const tenantName = sessionStorage.getItem("tenant_name");
                 let breadInit = false;
                 let shippingChoice = "0";
 
+                var Payments;
+                if (sessionStorage.getItem("tenant_prefix") === "rbc") {
+                    Payments = window.RBCPayPlan;
+                } else {
+                    Payments = window.BreadPayments;
+                }
+
                 $("#PaymentMethodTypeDisplay").change(function () {
                     // Initialize the Bread Pay modal once the buyer chooses the Bread Pay option
-                    if ($("#PaymentMethodType").val() === "BreadPay™—PayOverTime") {
+                    const tenantNameNoSpaces = tenantName.replace(/\s/g, '');
+                    if ($("#PaymentMethodType").val() === `${tenantNameNoSpaces}™—PayOverTime`) {
 
                         // Hide the standard volusion button and replace it with the Bread Pay Option
                         $("#btnSubmitOrder").hide();
-                        const breadButton = `<button class="w-100 btn btn-primary btn-lg" id="bread-checkout-btn" type="button" style="display: inline-block; margin: 5px auto; font-family: Poppins, sans-serif;">Bread Pay™ - Pay Over Time</button>`;
+                        const breadButton = `<button class="w-100 btn btn-primary btn-lg" id="bread-checkout-btn" type="button" style="display: inline-block; margin: 5px auto; font-family: Poppins, sans-serif;">${tenantName}™ — Pay Over Time</button>`;
                         $("#btnSubmitOrder").before(breadButton);
 
                         // Ensure they have chosen a shipping option before proceeding
@@ -1346,83 +1368,89 @@
                                  * Connect to and initialize the Bread SDK
                                  */
                                 getBreadParams().then(breadParams => {
-                                    if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
-                                        window.BreadPayments.setup({
-                                            integrationKey: integrationKey,
-                                            buyer: breadParams.buyer
+                                    // Check that total is above $50.00
+                                    if (breadParams.placement.order.totalPrice.value >= 5000) {
+                                        if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
+                                            Payments.setup({
+                                                integrationKey: integrationKey,
+                                                buyer: breadParams.buyer
+                                            });
+                                        } else {
+                                            const td = $('#divbtnSubmitOrder');
+                                            td.before("<div id='checkout-container'></div>");
+
+                                            Payments.setEmbedded(true);
+
+                                            Payments.setup({
+                                                integrationKey: integrationKey,
+                                                buyer: breadParams.buyer,
+                                                containerID: "checkout-container"
+                                            });
+                                        };
+
+                                        Payments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
+                                        Payments.on('INSTALLMENT:INITIALIZED', () => { });
+                                        Payments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
+                                            /**
+                                             * When the buyer completes the Bread Modal process,
+                                             * this function collects that data and sends it to the Bread Merchant Portal
+                                             * and the Volusion Admin Portal.
+                                             */
+
+                                            let breadData = breadParams.data;
+                                            breadData.tx_id = response.transactionID;
+                                            breadData.contactInfo.email = response.billingContact.email; // when a buyer is logged in, their email will be undefined in the params, so we double check it here
+                                            breadData.contactInfo = JSON.stringify(breadData.contactInfo);
+
+                                            // Add in any variable options selected for the product
+                                            $.each(breadParams.params.items, function (i, item) {
+                                                if (item.options) {
+                                                    if (item.options._values) {
+                                                        breadData[item.sku + '_options'] = item.options._values.join('');
+                                                    }
+                                                }
+                                            });
+
+                                            // Send along the order items to process. The bread backend doesnt maintain
+                                            // the correct order of transaction line items, so we may need this.
+                                            breadData.items = breadParams.params.items.map(function (item) {
+                                                var line = Object.assign({}, item);
+                                                line.product = { name: line.name };
+                                                delete line.name;
+                                                return line;
+                                            });
+
+                                            breadData.items = JSON.stringify(breadData.items)
+
+                                            breadData.discounts = breadParams.params.discounts.map(function (item) {
+                                                var line = Object.assign({}, item);
+                                                return line;
+                                            });
+
+                                            breadData.discounts = JSON.stringify(breadData.discounts);
+
+                                            $.ajax({
+                                                method: 'post',
+                                                dataType: 'json',
+                                                url: BREAD_ORDER_PROCESSING_URL,
+                                                data: breadData
+                                            }).then(function (response) {
+                                                if (response.success) {
+                                                    if (self.clearCart) {
+                                                        self.setCookie(self.cart_cookie, '');
+                                                    }
+                                                    self.orderComplete(response, breadParams.params);
+                                                } else {
+                                                    alert(response.message);
+                                                }
+                                            });
                                         });
+
+                                        Payments.init();
                                     } else {
-                                        const td = $('#divbtnSubmitOrder');
-                                        td.before("<div id='checkout-container'></div>");
-
-                                        window.BreadPayments.setEmbedded(true);
-
-                                        window.BreadPayments.setup({
-                                            integrationKey: integrationKey,
-                                            buyer: breadParams.buyer,
-                                            containerID: "checkout-container"
-                                        });
-                                    };
-
-                                    window.BreadPayments.on('INSTALLMENT:APPLICATION_DECISIONED', () => { });
-                                    window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-                                    window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
-                                        /**
-                                         * When the buyer completes the Bread Modal process,
-                                         * this function collects that data and sends it to the Bread Merchant Portal
-                                         * and the Volusion Admin Portal.
-                                         */
-
-                                        let breadData = breadParams.data;
-                                        breadData.tx_id = response.transactionID;
-                                        breadData.contactInfo.email = response.billingContact.email; // when a buyer is logged in, their email will be undefined in the params, so we double check it here
-                                        breadData.contactInfo = JSON.stringify(breadData.contactInfo);
-
-                                        // Add in any variable options selected for the product
-                                        $.each(breadParams.params.items, function (i, item) {
-                                            if (item.options) {
-                                                if (item.options._values) {
-                                                    breadData[item.sku + '_options'] = item.options._values.join('');
-                                                }
-                                            }
-                                        });
-
-                                        // Send along the order items to process. The bread backend doesnt maintain
-                                        // the correct order of transaction line items, so we may need this.
-                                        breadData.items = breadParams.params.items.map(function (item) {
-                                            var line = Object.assign({}, item);
-                                            line.product = { name: line.name };
-                                            delete line.name;
-                                            return line;
-                                        });
-
-                                        breadData.items = JSON.stringify(breadData.items)
-
-                                        breadData.discounts = breadParams.params.discounts.map(function (item) {
-                                            var line = Object.assign({}, item);
-                                            return line;
-                                        });
-
-                                        breadData.discounts = JSON.stringify(breadData.discounts);
-
-                                        $.ajax({
-                                            method: 'post',
-                                            dataType: 'json',
-                                            url: BREAD_ORDER_PROCESSING_URL,
-                                            data: breadData
-                                        }).then(function (response) {
-                                            if (response.success) {
-                                                if (self.clearCart) {
-                                                    self.setCookie(self.cart_cookie, '');
-                                                }
-                                                self.orderComplete(response, breadParams.params);
-                                            } else {
-                                                alert(response.message);
-                                            }
-                                        });
-                                    });
-
-                                    window.BreadPayments.init();
+                                        $("#bread-checkout-btn").text(`${tenantName} Requires a Total of $50 or More.`)
+                                        $("#bread-checkout-btn").prop("disabled", true)
+                                    }
                                 });
 
                             } else if (shippingChoice === "0" || !shippingChoice) {
@@ -1430,6 +1458,10 @@
                             } else if (breadInit) {
                                 self.zoidNodeCheck();
                             };
+
+                            const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Please Wait...</div>';
+                            $("#bread-checkout-btn").before(loadingHTML);
+                            $("#bread-btn-loading").hide()
 
                             // When the Bread Pay Button is clicked:
                             $("#bread-checkout-btn").on("click", () => {
@@ -1441,9 +1473,9 @@
                                     alert("Please choose a shipping option");
                                 } else {
                                     // Open the Bread Pay modal and begin checkout.
-                                    const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Please Wait...</div>';
-                                    $("#bread-checkout-btn").before(loadingHTML);
+                                    $("#bread-btn-loading").show()
                                     breadModalOpen();
+                                    $("#bread-btn-loading").hide()
                                     breadInit = true;
                                 }
                             });
@@ -1472,8 +1504,8 @@
                     const breadParams = await getBreadParams();
 
                     $("#bread-btn-loading").hide();
-                    window.BreadPayments.registerPlacements([breadParams.placement]);
-                    window.BreadPayments.openExperienceForPlacement([breadParams.placement]);
+                    Payments.registerPlacements([breadParams.placement]);
+                    Payments.openExperienceForPlacement([breadParams.placement]);
 
                 };
 
@@ -1491,6 +1523,7 @@
                         $.when(self.getCheckoutParams()).done(function (params) {
 
                             const shippingChoice = self.getShippingChoice(params.taxAndShipping.shipping);
+                            const currency = sessionStorage.getItem("currency");
 
                             if (shippingChoice == undefined) {
                                 $("#bread-btn-loading").hide();
@@ -1500,6 +1533,22 @@
                             self.zoidNodeCheck();
 
                             if (shippingChoice !== "TBD") {
+                                // Check for and remove trailing whitespace from shipping descripion
+                                shippingChoice.type = shippingChoice.type.trim()
+
+                                // Check for BOPIS and assign pickup address if necessary.
+                                if (shippingChoice.type === "In-store Pickup") {
+                                    ShippingOrPickupAddress = {
+                                        address1: sessionStorage.getItem("bopis_address_1"),
+                                        address2: sessionStorage.getItem("bopis_address_2"),
+                                        country: params.billingAddress.country,
+                                        locality: sessionStorage.getItem("bopis_address_locality"),
+                                        region: sessionStorage.getItem("bopis_address_region"),
+                                        postalCode: sessionStorage.getItem("bopis_address_postalcode")
+                                    };
+                                } else {
+                                    ShippingOrPickupAddress = params.shippingAddress
+                                };
 
                                 buyer = {
                                     givenName: params.givenName,
@@ -1509,7 +1558,7 @@
                                     email: params.email,
                                     phone: params.phone,
                                     billingAddress: params.billingAddress,
-                                    shippingAddress: params.shippingAddress
+                                    shippingAddress: ShippingOrPickupAddress
                                 };
 
                                 const totalShipping = shippingChoice.cost
@@ -1528,14 +1577,14 @@
                                         excluded_products.push(product_name);
                                     };
 
-                                    subTotal += item.unitPrice * item.quantity;
+                                    subTotal += item.unitPrice.value * item.quantity;
                                     item.shippingCost = {
                                         value: totalShipping,
-                                        currency: "USD",
+                                        currency: currency,
                                     };
                                     item.unitTax = {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     };
                                     item.shippingDescription = shippingChoice.type
 
@@ -1545,7 +1594,7 @@
 
                                 // Check if the buyer has any excluded products in their cart.
                                 if (excluded_products.length > 0) {
-                                    alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with Bread Pay, remove them from your cart and try again.`);
+                                    alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with ${tenantName}, remove them from your cart and try again.`);
                                     return;
                                 } else {
                                     // Check that the price is between min and max set prices
@@ -1566,25 +1615,39 @@
                                                 items: params.items,
                                                 subTotal: {
                                                     value: subTotal,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalTax: {
                                                     value: totalTax,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalShipping: {
                                                     value: totalShipping,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalDiscounts: {
                                                     value: totalDiscounts,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalPrice: {
                                                     value: totalPrice,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                             }
+                                        };
+
+                                        if (shippingChoice.type === "In-store Pickup") {
+                                            placement.order.fulfillmentType = "PICKUP";
+                                            placement.order.pickupInformation = {
+                                                name: {
+                                                    givenName: sessionStorage.getItem("bopis_contact_firstname"),
+                                                    familyName: sessionStorage.getItem("bopis_contact_lastname"),
+                                                    additionalName: sessionStorage.getItem("bopis_contact_additionalname"),
+                                                },
+                                                phone: sessionStorage.getItem("bopis_contact_phone"),
+                                                address: ShippingOrPickupAddress,
+                                                email: sessionStorage.getItem("bopis_contact_email"),
+                                            };
                                         };
                                     };
                                 };
@@ -1606,9 +1669,9 @@
 
                                 data = {
                                     shippingID: shippingChoice.typeId,
-                                    amount: JSON.stringify({ currency: "USD", value: totalPrice }),
+                                    amount: JSON.stringify({ currency: currency, value: totalPrice }),
                                     billingAddress: JSON.stringify(params.billingAddress),
-                                    shippingAddress: JSON.stringify(params.shippingAddress),
+                                    shippingAddress: JSON.stringify(ShippingOrPickupAddress),
                                     contactInfo: contactInfo // we need to add another item to this object later, so we stringify it then.
                                 };
 
@@ -1629,6 +1692,15 @@
             makeBread: function (integrationKey) {
 
                 const self = this;
+                const tenantName = sessionStorage.getItem("tenant_name");
+                const currency = sessionStorage.getItem("currency");
+
+                var Payments;
+                if (sessionStorage.getItem("tenant_prefix") === "rbc") {
+                    Payments = window.RBCPayPlan;
+                } else {
+                    Payments = window.BreadPayments;
+                }
 
                 /**
                  * These elements are added to the page, and then shown or hidden appropriately based on 
@@ -1637,8 +1709,8 @@
                  */
                 let button = $(this.buttonHtml);
                 this.insertButton(button);
-                const placeHolderHTML = '<div id="bread-btn-placeholder" style="float:right; width: 300px;">*Please choose a shipping option to check out with Bread Pay™</div>'
-                const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Bread Pay™ Checkout Loading...</div>'
+                const placeHolderHTML = `<div id="bread-btn-placeholder" style="float:right; width: 300px;">*Please choose a shipping option to check out with ${tenantName}™</div>`
+                const loadingHTML = `<div id="bread-btn-loading" style="float:right; width: 300px;">${tenantName}™ Checkout Loading...</div>`
                 $('#bread-checkout-btn').before(placeHolderHTML);
                 $('#bread-checkout-btn').before(loadingHTML);
                 $('#bread-btn-placeholder').hide();
@@ -1655,8 +1727,26 @@
                     $.when(self.getCheckoutParams()).done(function (params) {
                         const shippingChoice = self.getShippingChoice(params.taxAndShipping.shipping);
                         if ($('input[name="ShipResidential"]').is(':checked') || $('input[name="ShipResidential"]').length <= 1) {
-
+                            
+                            let ShippingOrPickupAddress = {};
                             if (shippingChoice !== "TBD" && shippingChoice !== undefined) {
+                                // Check for and remove trailing whitespace from shipping descripion
+                                shippingChoice.type = shippingChoice.type.trim()
+
+                                // Check for BOPIS and assign pickup address if necessary.
+                                if (shippingChoice.type === "In-store Pickup") {
+                                    ShippingOrPickupAddress = {
+                                        address1: sessionStorage.getItem("bopis_address_1"),
+                                        address2: sessionStorage.getItem("bopis_address_2"),
+                                        country: params.billingAddress.country,
+                                        locality: sessionStorage.getItem("bopis_address_locality"),
+                                        region: sessionStorage.getItem("bopis_address_region"),
+                                        postalCode: sessionStorage.getItem("bopis_address_postalcode")
+
+                                    };
+                                } else {
+                                    ShippingOrPickupAddress = params.shippingAddress
+                                };
 
                                 $("#bread-checkout-btn").show();
                                 $('#bread-btn-placeholder').hide();
@@ -1670,11 +1760,11 @@
                                     email: params.email,
                                     phone: params.phone,
                                     billingAddress: params.billingAddress,
-                                    shippingAddress: params.shippingAddress
+                                    shippingAddress: ShippingOrPickupAddress
                                 };
 
                                 if (sessionStorage.getItem("bread_embedded_checkout") !== "on") {
-                                    window.BreadPayments.setup({
+                                    Payments.setup({
                                         integrationKey: integrationKey,
                                         buyer: buyer
                                     });
@@ -1682,9 +1772,9 @@
                                     const td = $('#divbtnSubmitOrder');
                                     td.before("<div id='checkout-container'></div>");
 
-                                    window.BreadPayments.setEmbedded(true);
+                                    Payments.setEmbedded(true);
 
-                                    window.BreadPayments.setup({
+                                    Payments.setup({
                                         integrationKey: integrationKey,
                                         buyer: buyer,
                                         containerID: "checkout-container"
@@ -1706,24 +1796,23 @@
                                         excluded_products.push(product_name);
                                     };
 
-                                    subTotal += item.unitPrice * item.quantity;
+                                    subTotal += item.unitPrice.value * item.quantity;
                                     item.shippingCost = {
                                         value: totalShipping,
-                                        currency: "USD",
+                                        currency: currency,
                                     };
                                     item.unitTax = {
                                         value: 0,
-                                        currency: "USD",
+                                        currency: currency,
                                     };
                                     item.shippingDescription = shippingChoice.type
-
                                 });
 
                                 let totalPrice;
 
                                 // Check if the buyer has any excluded products in their cart.
                                 if (excluded_products.length > 0) {
-                                    alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with Bread Pay, remove them from your cart and try again.`);
+                                    alert(`The following items are not available for purchase via Bread: ${excluded_products}. To pay over time with ${tenantName}, remove them from your cart and try again.`);
                                     return;
                                 } else {
                                     // Check that the price is between min and max set prices
@@ -1744,103 +1833,122 @@
                                                 items: params.items,
                                                 subTotal: {
                                                     value: subTotal,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalTax: {
                                                     value: totalTax,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalShipping: {
                                                     value: totalShipping,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalDiscounts: {
                                                     value: totalDiscounts,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                                 totalPrice: {
                                                     value: totalPrice,
-                                                    currency: "USD",
+                                                    currency: currency,
                                                 },
                                             }
                                         };
                                     };
                                 };
 
-                                window.BreadPayments.registerPlacements([placement]);
-                                window.BreadPayments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
-
-
-                                    // The jsonHelper Decode function in the asp folder breaks nested objects, 
-                                    // so I have to send the customer contact info here or else it doesn't work,
-                                    // But I also have to restructure it so there are no nested objects
-
-                                    let contactInfo = {
-                                        firstName: params.givenName,
-                                        lastName: params.familyName,
-                                        fullName: `${params.givenName} ${params.familyName}`,
-                                        email: response.billingContact.email,
-                                        phone: params.phone
-                                    }
-
-                                    // asp can't parse JSON natively, so we have to transform these objects into strings
-                                    // the use jsonHelper to convert and manipulate them in the asp files.
-
-                                    let breadData = {
-                                        tx_id: response.transactionID,
-                                        shippingID: shippingChoice.typeId,
-                                        amount: JSON.stringify({ currency: "USD", value: totalPrice }),
-                                        billingAddress: JSON.stringify(params.billingAddress),
-                                        shippingAddress: JSON.stringify(params.shippingAddress),
-                                        contactInfo: JSON.stringify(contactInfo)
+                                if (shippingChoice.type === "In-store Pickup") {
+                                    placement.order.fulfillmentType = "PICKUP";
+                                    placement.order.pickupInformation = {
+                                        name: {
+                                            givenName: sessionStorage.getItem("bopis_contact_firstname"),
+                                            familyName: sessionStorage.getItem("bopis_contact_lastname"),
+                                            additionalName: sessionStorage.getItem("bopis_contact_additionalname"),
+                                        },
+                                        phone: sessionStorage.getItem("bopis_contact_phone"),
+                                        address: ShippingOrPickupAddress,
+                                        email: sessionStorage.getItem("bopis_contact_email"),
                                     };
+                                }
 
-                                    //  Add in any variable options selected for the product
-                                    $.each(params.items, function (i, item) {
-                                        if (item.options) {
-                                            if (item.options._values) {
-                                                breadData[item.sku + '_options'] = item.options._values.join('');
-                                            }
+                                if (totalPrice >= 5000) {
+                                    Payments.registerPlacements([placement]);
+                                    Payments.on('INSTALLMENT:APPLICATION_CHECKOUT', response => {
+                                        // The jsonHelper Decode function in the asp folder breaks nested objects, 
+                                        // so I have to send the customer contact info here or else it doesn't work,
+                                        // But I also have to restructure it so there are no nested objects
+
+                                        let contactInfo = {
+                                            firstName: params.givenName,
+                                            lastName: params.familyName,
+                                            fullName: `${params.givenName} ${params.familyName}`,
+                                            email: response.billingContact.email,
+                                            phone: params.phone
                                         }
-                                    });
 
-                                    // Send along the order items to process. The bread backend doesnt maintain
-                                    // the correct order of transaction line items, so we may need this.
-                                    breadData.items = params.items.map(function (item) {
-                                        var line = Object.assign({}, item);
-                                        line.product = { name: line.name };
-                                        delete line.name;
-                                        return line;
-                                    });
+                                        // asp can't parse JSON natively, so we have to transform these objects into strings
+                                        // the use jsonHelper to convert and manipulate them in the asp files.
 
-                                    breadData.items = JSON.stringify(breadData.items);
+                                        let breadData = {
+                                            tx_id: response.transactionID,
+                                            shippingID: shippingChoice.typeId,
+                                            amount: JSON.stringify({ currency: sessionStorage.getItem("currency"), value: totalPrice }),
+                                            billingAddress: JSON.stringify(params.billingAddress),
+                                            shippingAddress: JSON.stringify(ShippingOrPickupAddress),
+                                            contactInfo: JSON.stringify(contactInfo)
+                                        };
 
-                                    breadData.discounts = params.discounts.map(function (item) {
-                                        var line = Object.assign({}, item);
-                                        return line;
-                                    });
-
-                                    breadData.discounts = JSON.stringify(breadData.discounts);
-
-                                    $.ajax({
-                                        method: 'post',
-                                        dataType: 'json',
-                                        url: BREAD_ORDER_PROCESSING_URL,
-                                        data: breadData
-                                    }).then(function (response) {
-                                        if (response.success) {
-                                            if (self.clearCart) {
-                                                self.setCookie(self.cart_cookie, '');
+                                        //  Add in any variable options selected for the product
+                                        $.each(params.items, function (i, item) {
+                                            if (item.options) {
+                                                if (item.options._values) {
+                                                    breadData[item.sku + '_options'] = item.options._values.join('');
+                                                }
                                             }
-                                            self.orderComplete(response, params);
-                                        } else {
-                                            alert(response.message);
-                                        }
+                                        });
+
+                                        // Send along the order items to process. The bread backend doesnt maintain
+                                        // the correct order of transaction line items, so we may need this.
+                                        breadData.items = params.items.map(function (item) {
+                                            var line = Object.assign({}, item);
+                                            line.product = { name: line.name };
+                                            delete line.name;
+                                            return line;
+                                        });
+
+                                        breadData.items = JSON.stringify(breadData.items);
+
+                                        breadData.discounts = params.discounts.map(function (item) {
+                                            var line = Object.assign({}, item);
+                                            return line;
+                                        });
+
+                                        breadData.discounts = JSON.stringify(breadData.discounts);
+
+                                        $.ajax({
+                                            method: 'post',
+                                            dataType: 'json',
+                                            url: BREAD_ORDER_PROCESSING_URL,
+                                            data: breadData
+                                        }).then(function (response) {
+                                            if (response.success) {
+                                                if (self.clearCart) {
+                                                    self.setCookie(self.cart_cookie, '');
+                                                }
+                                                self.orderComplete(response, params);
+                                            } else {
+                                                alert(response.message);
+                                            }
+                                        });
+
+                                        Payments.on('INSTALLMENT:INITIALIZED', () => { });
+
                                     });
-
-                                    window.BreadPayments.on('INSTALLMENT:INITIALIZED', () => { });
-
-                                });
+                                } else {
+                                    // If the cart is less than $50, do not allow checkout
+                                    $("#bread-btn-loading").hide();
+                                    $("#bread-checkout-btn").hide();
+                                    $("#bread-btn-placeholder").hide();
+                                };
                             } else {
                                 /**
                                  * If the buyer has not yet chosen a shipping option, we hide the button that would open the modal until they do so.
@@ -1848,13 +1956,15 @@
                                 $("#bread-checkout-btn").hide();
                                 $("#bread-btn-placeholder").show();
                                 $("#bread-btn-loading").hide();
+                                $('#bread-btn-checkout').hide();
                             };
                         } else {
                             $("#bread-checkout-btn").hide();
                             $("#bread-btn-placeholder").show();
                             $("#bread-btn-loading").hide();
+                            $('#bread-btn-checkout').hide();
                         }
-                        window.BreadPayments.__internal__.init();
+                        Payments.__internal__.init();
                     });
                 };
 
@@ -1903,6 +2013,7 @@
             },
 
             zoidNodeCheck: function () {
+                const tenant_name = sessionStorage.getItem("tenant_name")
                 if ($('[id*="zoid-checkout-component"]').length > 0) {
                     /**
                      * Volusion does not separate checkout from filling our your billing details, including shipping choice.
@@ -1912,7 +2023,7 @@
                      * At time of writing, there is a backlog ticket to address this issue in the modal directly. In the meantime,
                      * this check should prevent the buyer from checking out with changed shipping information.
                      */
-                    if (confirm("Please click OK to refresh the page to update your shipping option and check out with Bread Pay. Your information will be saved in the form.")) {
+                    if (confirm(`Please click OK to refresh the page to update your shipping option and check out with ${tenant_name}. Your information will be saved in the form.`)) {
                         location.reload();
                     };
                 };
@@ -1932,6 +2043,8 @@
                 var lineitems = $('table[id$="onepage-ordersummary-items"] tr').slice(1);
                 var detailsRequests = [];
                 var checkoutParams = $.Deferred();
+
+                const currency = sessionStorage.getItem("currency");
 
                 if (window.BREAD_USE_AJAX_CART) {
                     // fetch products details
@@ -1961,7 +2074,10 @@
                             } else if (price_in_cents > 0) {
                                 cart_surcharges.push({
                                     name: name + ' (' + itemSku + ')',
-                                    unitPrice: price_in_cents,
+                                    unitPrice: {
+                                        value: price_in_cents,
+                                        currency: currency
+                                    },
                                     sku: 'SURCHARGE',
                                     detailUrl: location.href,
                                     quantity: quantity
@@ -1974,7 +2090,10 @@
                                 detailsRequests.push($.get('/Help_CartItemDetails.asp?CartID=' + cartID, function (itemDetailsPage) {
                                     items.push({
                                         name: name,
-                                        unitPrice: price_in_cents,
+                                        unitPrice: {
+                                            value: price_in_cents,
+                                            currency: currency
+                                        },
                                         sku: itemSku,
                                         detailUrl: location.href,
                                         quantity: quantity,
@@ -1991,6 +2110,45 @@
                     return $('input[name="' + name + '"]').val();
                 };
 
+                let billingCountry = "";
+                const billingCountryOptions = document.getElementsByName("BillingCountry")[0];
+                for (let i = 0; i < billingCountryOptions.length; i++) {
+                    if (billingCountryOptions[i].selected == true) {
+                        switch (billingCountryOptions[i].value) {
+                            case "Canada":
+                                billingCountry = "CA";
+                                break;
+                            case "United States":
+                                billingCountry = "US";
+                                break;
+                            default:
+                                billingCountry = billingCountryOptions[i].value;
+                        }
+                    }
+                }
+
+                let shippingCountry = "";
+                const shippingCountryOptions = document.getElementsByName("ShipCountry")[0];
+                if (shippingCountryOptions === undefined) {
+                    // Buyer has indicated billing and shipping addresses are the same
+                    shippingCountry = billingCountry;
+                } else {
+                    for (let i = 0; i < shippingCountryOptions.length; i++) {
+                        if (shippingCountryOptions[i].selected == true) {
+                            switch (shippingCountryOptions[i].value) {
+                                case "Canada":
+                                    shippingCountry = "CA";
+                                    break;
+                                case "United States":
+                                    shippingCountry = "US";
+                                    break;
+                                default:
+                                    shippingCountry = shippingCountryOptions[i].value;
+                            }
+                        }
+                    }
+                }
+
                 var billingContact = {
                     firstName: formValue('BillingFirstName'),
                     lastName: formValue('BillingLastName'),
@@ -2000,7 +2158,8 @@
                     city: formValue('BillingCity'),
                     state: formValue('BillingState'),
                     phone: formValue('BillingPhoneNumber'),
-                    email: formValue('Email')
+                    email: formValue('Email'),
+                    country: billingCountry
                 };
 
                 var shippingContact = {
@@ -2011,12 +2170,12 @@
                     zip: formValue('ShipPostalCode'),
                     city: formValue('ShipCity'),
                     state: formValue('ShipState'),
-                    phone: formValue('ShipPhoneNumber')
+                    phone: formValue('ShipPhoneNumber'),
+                    country: shippingCountry
                 };
 
                 $.when.apply($, detailsRequests).done(function () {
                     items.push.apply(items, cart_surcharges);
-
 
                     const taxAndShipping = {};
                     $.when(self.getCheckoutTotals(items, shippingContact)).done(function (result) {
@@ -2036,7 +2195,7 @@
                                 locality: billingContact.city,
                                 region: billingContact.state,
                                 postalCode: billingContact.zip,
-                                country: "US"
+                                country: billingCountry
                             },
                             shippingAddress: {
                                 address1: shippingContact.address,
@@ -2044,7 +2203,7 @@
                                 locality: shippingContact.city,
                                 region: shippingContact.state,
                                 postalCode: shippingContact.zip,
-                                country: "US"
+                                country: shippingCountry
                             },
                             items: self.flattenItems(items),
                             discounts: cart_discounts,
@@ -2053,13 +2212,8 @@
 
                         checkoutParams.resolve($.extend(self.parent.getCheckoutParams.apply(self), opts));
                     });
-
-
-
                 });
-
                 return checkoutParams;
-
             }
         });
 
@@ -2093,9 +2247,9 @@
             let script_url;
 
             if (breadEnv === "sandbox") {
-                script_url = "https://connect-preview.breadpayments.com/sdk.js";
+                script_url = sessionStorage.getItem("sdk_sandbox");
             } else {
-                script_url = "https://connect.breadpayments.com/sdk.js";
+                script_url = sessionStorage.getItem("sdk_production");
             };
 
             // Set the appropriate script URL and append the script HTML tag to the store template
@@ -2132,6 +2286,14 @@
         };
 
         // Fetch environment 
+        $.getJSON('/v/bread/asp/tenantSettings.asp', function (tenant_settings) {
+            sessionStorage.setItem("tenant_name", tenant_settings.tenant_name);
+            sessionStorage.setItem("tenant_prefix", tenant_settings.tenant_prefix);
+            sessionStorage.setItem("sdk_sandbox", tenant_settings.sdk_sandbox);
+            sessionStorage.setItem("sdk_production", tenant_settings.sdk_production);
+            sessionStorage.setItem("currency", tenant_settings.currency);
+        })
+
         $.getJSON('/v/bread/asp/breadSettings.asp', function (settings) {
             sessionStorage.setItem('bread-environment', settings.environment);
             sessionStorage.setItem('integration-key', settings.integration_key);
@@ -2144,7 +2306,17 @@
             sessionStorage.setItem("bread_enable_sku_filter", settings.bread_enable_sku_filter);
             sessionStorage.setItem("bread_sku_filter_list", settings.bread_sku_filter_list);
             sessionStorage.setItem("bread_embedded_checkout", settings.bread_embedded_checkout);
-            sessionStorage.setItem("bread-replace-checkout-button", settings.bread_replace_checkout_button)
+            sessionStorage.setItem("bread-replace-checkout-button", settings.bread_replace_checkout_button);
+            sessionStorage.setItem("bopis_contact_firstname", settings.bopis_contact_firstname);
+            sessionStorage.setItem("bopis_contact_lastname", settings.bopis_contact_lastname);
+            sessionStorage.setItem("bopis_contact_additionalname", settings.bopis_contact_additionalname);
+            sessionStorage.setItem("bopis_contact_phone", settings.bopis_contact_phone);
+            sessionStorage.setItem("bopis_contact_email", settings.bopis_contact_email);
+            sessionStorage.setItem("bopis_address_1", settings.bopis_address_1);
+            sessionStorage.setItem("bopis_address_2", settings.bopis_address_2);
+            sessionStorage.setItem("bopis_address_locality", settings.bopis_address_locality);
+            sessionStorage.setItem("bopis_address_region", settings.bopis_address_region);
+            sessionStorage.setItem("bopis_address_postalcode", settings.bopis_address_postalcode);
             breadEnv = settings.environment;
             initPage();
         })

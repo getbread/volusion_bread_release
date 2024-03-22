@@ -13,7 +13,6 @@
  * 
  */
 
-
 const script = document.createElement('script');
 script.src = 'https://code.jquery.com/jquery-3.6.4.min.js';
 document.getElementsByTagName('head')[0].appendChild(script);
@@ -21,6 +20,9 @@ document.getElementsByTagName('head')[0].appendChild(script);
 const breadRefreshButton = document.getElementById("bread_refresh")
 
 breadRefreshButton.onclick = () => {
+    $.getJSON('/v/bread/asp/tenantSettings.asp', function (tenant_settings) {
+        sessionStorage.setItem("currency", tenant_settings.currency);
+    })
 
     let listContainer = document.createElement("div");
     listContainer.setAttribute("id", "order_list_container")
@@ -118,15 +120,12 @@ breadRefreshButton.onclick = () => {
                     data.externalID = orders[i]["OrderID"]["#text"];
                 };
                 if ("PaymentAmount" in orders[i]) {
-                    data.amount = JSON.stringify({ currency: "USD", value: Math.round(Number(orders[i]["PaymentAmount"]["#text"]) * 100) });
+                    data.amount = JSON.stringify({ currency: sessionStorage.getItem("currency"), value: Math.round(Number(orders[i]["PaymentAmount"]["#text"]) * 100) });
                 };
                 if ("TrackingNumbers" in orders[i]) {
                     data.carrier = orders[i]["TrackingNumbers"]["Gateway"]["#text"];
+                    data.trackingNumber = orders[i]["TrackingNumbers"]["TrackingNumber"]["#text"];
                 };
-                if ("TrackingNumbers" in orders[i]) {
-                    data.TrackingNumber = orders[i]["TrackingNumbers"]["TrackingNumber"]["#text"];
-                };
-
                 $.ajax({
                     method: 'post',
                     dataType: 'json',

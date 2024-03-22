@@ -17,20 +17,18 @@ Class BreadPlatformAPI
 	Private Sub Class_Initialize
 	
 		If dct_settings("bread_env") = "production" Then
-			api_baseurl = "https://api.platform.breadpayments.com"
+			api_baseurl = tnt_settings("domain_production")
 		Else
-			api_baseurl = "https://api-preview.platform.breadpayments.com"
+			api_baseurl = tnt_settings("domain_sandbox")
 		End If
-		
+
 		Set jsonHelper = New VbsJson
-
 		Dim payload : Set payload = Server.CreateObject("Scripting.Dictionary")
-
 		payload.Add "type", "authorize"
 
-		Dim request_url : request_url = api_baseurl & "/api/auth/service/authorize"
+		Dim request_url : request_url = api_baseurl & "/auth/service/authorize"
 		Dim http : Set http = CreateObject("MSXML2.ServerXMLHTTP.3.0")
-		
+
 		http.Open "POST", request_url, False
 		http.setRequestHeader "Content-Type", "application/json"
 		http.setRequestHeader "Authorization", dct_settings("bread_platform_auth")
@@ -84,7 +82,7 @@ Class BreadPlatformAPI
 		payload.Add "items", jsonHelper.Decode(purchaseItems)
 		payload.Add "discounts", jsonHelper.Decode(discounts)
 
-		Set getTransaction = getRequest( "GET", "/api/transaction/" + tx_id, payload )
+		Set getTransaction = getRequest( "GET", "/transaction/" + tx_id, payload )
 		
 	End Function
 	
@@ -99,7 +97,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "authorize"
 		payload.Add "amount", jsonHelper.Decode(amount)
 		
-		Set authorizeTransaction = getRequest( "POST", "/api/transaction/" + tx_id + "/authorize", payload )
+		Set authorizeTransaction = getRequest( "POST", "/transaction/" + tx_id + "/authorize", payload )
 
 	End Function
 	
@@ -115,7 +113,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "update"
 		payload.Add "externalID", externalID
 
-		Set updateTransaction = makeRequest( "PATCH", "/api/transaction/" & tx_id, payload )
+		Set updateTransaction = makeRequest( "PATCH", "/transaction/" & tx_id, payload )
 		
 	End Function
 	
@@ -130,7 +128,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "settle"
 		payload.Add "amount", jsonHelper.Decode(amount)
 
-		Dim settleResponse : Set settleResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/settle", payload )
+		Dim settleResponse : Set settleResponse = makeRequest( "POST", "/transaction/" + tx_id + "/settle", payload )
 
 		' Check for an error, and then return an appropriate response based on error status
 		If settleResponse.Exists("message") Then
@@ -167,7 +165,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "cancel"
 		payload.Add "amount", jsonHelper.Decode(amount)
 		
-		Dim cancelResponse : Set cancelResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/cancel", payload )
+		Dim cancelResponse : Set cancelResponse = makeRequest( "POST", "/transaction/" + tx_id + "/cancel", payload )
 
 		' Check for an error, and then return an appropriate response based on error status
 		If cancelResponse.Exists("message") Then
@@ -201,7 +199,7 @@ Class BreadPlatformAPI
 		payload.Add "type", "refund"
 		payload.Add "amount", jsonHelper.Decode(amount)
 
-		Dim refundResponse : Set refundResponse = makeRequest( "POST", "/api/transaction/" + tx_id + "/refund", payload )
+		Dim refundResponse : Set refundResponse = makeRequest( "POST", "/transaction/" + tx_id + "/refund", payload )
 
 		' Check for an error, and then return an appropriate response based on error status
 		If refundResponse.Exists("message") Then
@@ -237,7 +235,7 @@ Class BreadPlatformAPI
 		payload.Add "carrier", carrier
 		payload.Add "trackingNumber", trackingNumber
 
-		Set updateFulfillmentInfo = makeRequest( "POST", "/api/transaction/" + tx_id + "/fulfillment", payload )
+		Set updateFulfillmentInfo = makeRequest( "POST", "/transaction/" + tx_id + "/fulfillment", payload )
 
 	End Function
 

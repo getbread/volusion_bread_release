@@ -1,7 +1,7 @@
 <%
 
 Dim setup_file_path : setup_file_path = (base_path & "settings.inc")
-Dim css_file_path : css_file_path = (RegexReplace(base_path, "\w+\\$", "") & "css\styles.css")
+Dim css_file_path : css_file_path = (RegexReplace(base_path, "\w+\\$", "") & "css\breadpay_styles.css")
 Dim dct_setup : Set dct_setup = CreateObject("Scripting.Dictionary")
 Dim setup_errors
 
@@ -84,6 +84,16 @@ Sub Save_Settings()
 	file_setup.WriteLine("disable_autoload|" & Request.Form("disable_autoload"))
 	file_setup.WriteLine("completed_order_status|" & Request.Form("completed_order_status"))
 	file_setup.WriteLine("bread_replace_checkout_button|" & Request.Form("bread_replace_checkout_button"))
+	file_setup.WriteLine("bopis_contact_firstname|" & Request.Form("bopis_contact_firstname"))
+	file_setup.WriteLine("bopis_contact_lastname|" & Request.Form("bopis_contact_lastname"))
+	file_setup.WriteLine("bopis_contact_additionalname|" & Request.Form("bopis_contact_additionalname"))
+	file_setup.WriteLine("bopis_contact_phone|" & Request.Form("bopis_contact_phone"))
+	file_setup.WriteLine("bopis_contact_email|" & Request.Form("bopis_contact_email"))
+	file_setup.WriteLine("bopis_address_1|" & Request.Form("bopis_address_1"))
+	file_setup.WriteLine("bopis_address_2|" & Request.Form("bopis_address_2"))
+	file_setup.WriteLine("bopis_address_region|" & Request.Form("bopis_address_region"))
+	file_setup.WriteLine("bopis_address_locality|" & Request.Form("bopis_address_locality"))
+	file_setup.WriteLine("bopis_address_postalcode|" & Request.Form("bopis_address_postalcode"))
 	
 	file_setup.Close
 
