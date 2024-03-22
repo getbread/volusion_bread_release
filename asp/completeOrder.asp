@@ -1,4 +1,5 @@
 <!--#include file="load_settings.inc"-->
+<!--#include file="load_tenant_settings.inc"-->
 <!--#include file="./classes/jsonHelper.asp"-->
 <!--#include file="./classes/breadPlatformApi.asp"-->
 <!--#include file="./classes/volusionApi.asp"-->
@@ -126,8 +127,8 @@ If Not transaction("error") Then
 					
 					order_line.Add "ProductCode", "Surcharge"
 					order_line.Add "ProductName", "<![CDATA[" & line("product")("name") & "]]>"
-					order_line.Add "ProductPrice", Round( line("unitPrice") / 100, 2 )
-					order_line.Add "TotalPrice", Round( line("unitPrice") / 100, 2 )		
+					order_line.Add "ProductPrice", Round( line("unitPrice")("value") / 100, 2 )
+					order_line.Add "TotalPrice", Round( line("unitPrice")("value") / 100, 2 )		
 					order_line.Add "Quantity", 1
 					
 					ReDim Preserve order_details( UBound( order_details ) + 1 )
@@ -141,9 +142,9 @@ If Not transaction("error") Then
 					order_line.Add "ProductID", product.SelectSingleNode("//Products/ProductID").text
 					order_line.Add "ProductCode", line("sku")
 					order_line.Add "ProductName", "<![CDATA[" & line("product")("name") & "]]>"
-					order_line.Add "ProductPrice", Round( line("unitPrice") / 100, 2 )
+					order_line.Add "ProductPrice", Round( line("unitPrice")("value") / 100, 2 )
 					order_line.Add "Quantity", line("quantity")
-					order_line.Add "TotalPrice", Round( ( line("unitPrice") * line("quantity") ) / 100, 2 )			
+					order_line.Add "TotalPrice", Round( ( line("unitPrice")("value") * line("quantity") ) / 100, 2 )			
 					order_line.Add "Options", Request.Form( line("sku") & "_options" )
 					
 					Set product_weight = product.SelectSingleNode("//Products/ProductWeight")
@@ -159,19 +160,19 @@ If Not transaction("error") Then
 			Next
 			
 			'' Add any discounts
-				For Each line in transaction("discounts")
-					Set order_line = Server.CreateObject("Scripting.Dictionary")
-					
-					order_line.Add "DiscountValue", Round( line("amount") / 100, 2 )
-					order_line.Add "Quantity", 1
-					order_line.Add "ProductCode", line("productCode")
-					order_line.Add "ProductName", line("description")
-					order_line.Add "ProductPrice", Round( (line("amount") / 100) * -1, 2 )
-					order_line.Add "TotalPrice", Round( (line("amount") / 100) * -1, 2 )
-					
-					ReDim Preserve order_details( UBound( order_details ) + 1 )
-					Set order_details( UBound( order_details ) ) = order_line
-				Next
+			For Each line in transaction("discounts")
+				Set order_line = Server.CreateObject("Scripting.Dictionary")
+				
+				order_line.Add "DiscountValue", Round( line("amount") / 100, 2 )
+				order_line.Add "Quantity", 1
+				order_line.Add "ProductCode", line("productCode")
+				order_line.Add "ProductName", line("description")
+				order_line.Add "ProductPrice", Round( (line("amount") / 100) * -1, 2 )
+				order_line.Add "TotalPrice", Round( (line("amount") / 100) * -1, 2 )
+				
+				ReDim Preserve order_details( UBound( order_details ) + 1 )
+				Set order_details( UBound( order_details ) ) = order_line
+			Next
 
 			
 			new_order.Add "OrderDetails", order_details

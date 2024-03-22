@@ -1,0 +1,8 @@
+tenant_name: Bread Pay
+gateway_id: bread_finance
+tenant_prefix: bread
+sdk_sandbox: https://connect-preview.breadpayments.com/sdk.js
+sdk_production: https://connect.breadpayments.com/sdk.js
+platform_domain_sandbox_api: https://api-preview.platform.breadpayments.com/api
+platform_domain_production_api: https://api.platform.breadpayments.com/api
+currency: USD

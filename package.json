@@ -1,0 +1,12 @@
+{
+  "name": "volusion-plugin",
+  "version": "1.0.0",
+  "description": "=== Plugin Name === Contributors: breadpay Tags: bread, finance, breadpay, volusion",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-tenant-settings": "node generate-tenant-settings.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

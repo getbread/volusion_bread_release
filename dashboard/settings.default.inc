@@ -22,3 +22,13 @@ debug_mode|
 disable_autoload|
 completed_order_status|New
 bread_replace_checkout_button|on
+bopis_contact_firstname|
+bopis_contact_lastname|
+bopis_contact_additionalname|
+bopis_contact_phone|
+bopis_contact_email|
+bopis_address_1|
+bopis_address_2|
+bopis_address_locality|
+bopis_address_region|
+bopis_address_postalcode|
