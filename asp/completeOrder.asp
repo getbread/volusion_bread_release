@@ -62,7 +62,6 @@ If Not transaction("error") Then
 			new_customer.Add "PhoneNumber", transaction("contactInfo")("phone")
 			new_customer.Add "RestrictedFreeShipping", "T"
 
-			
 			Set customer = volusion.insert( "Customers", Array( new_customer ) )
 			Set customer_id = customer.SelectSingleNode("//Customers/CustomerID")
 
@@ -199,8 +198,8 @@ If Not transaction("error") Then
 				End If
 
 				processed_response.Add "success", True
-				processed_response.Add "order_id", tx_id
-				
+				processed_response.Add "order_id", tx_id	
+
 				'' SUCCESS !
 				
 				If dct_settings("debug_mode") = "on" Then

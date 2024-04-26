@@ -1340,7 +1340,7 @@
                     Payments = window.RBCPayPlan;
                 } else {
                     Payments = window.BreadPayments;
-                }
+                };
 
                 $("#PaymentMethodTypeDisplay").change(function () {
                     // Initialize the Bread Pay modal once the buyer chooses the Bread Pay option
@@ -1445,23 +1445,17 @@
                                                 }
                                             });
                                         });
-
                                         Payments.init();
                                     } else {
-                                        $("#bread-checkout-btn").text(`${tenantName} Requires a Total of $50 or More.`)
-                                        $("#bread-checkout-btn").prop("disabled", true)
+                                        resetBreadButton(tenantName, "total");
                                     }
                                 });
 
                             } else if (shippingChoice === "0" || !shippingChoice) {
-                                resetBreadButton();
+                                resetBreadButton(tenantName);
                             } else if (breadInit) {
                                 self.zoidNodeCheck();
                             };
-
-                            const loadingHTML = '<div id="bread-btn-loading" style="float:right; width: 300px;">Please Wait...</div>';
-                            $("#bread-checkout-btn").before(loadingHTML);
-                            $("#bread-btn-loading").hide()
 
                             // When the Bread Pay Button is clicked:
                             $("#bread-checkout-btn").on("click", () => {
@@ -1480,7 +1474,7 @@
                                 }
                             });
                         } else {
-                            resetBreadButton();
+                            resetBreadButton(tenantName);
                         };
                     } else {
                         // Remove the Bread Pay button and reveal the Volusion one when the buyer switches from Bread Pay to another payment type
@@ -1489,12 +1483,16 @@
                     };
                 });
 
-                const resetBreadButton = () => {
+                const resetBreadButton = (tenantName, resetReason = "") => {
                     $("#PaymentMethodTypeDisplay").prop("selectedIndex", 0);
                     $("#bread-checkout-btn").remove();
                     $("#btnSubmitOrder").show();
-                    alert("Please complete your contact information.")
-                }
+                    if (resetReason === "total") {
+                        alert(`${tenantName} Requires a Total of $50 or More.`);
+                    } else {
+                        alert("Please complete your contact information.");
+                    };
+                };
 
                 const breadModalOpen = async () => {
                     /**
