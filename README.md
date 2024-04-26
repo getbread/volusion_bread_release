@@ -34,7 +34,7 @@ Bread Pay / Volusion Integration Guide
 
 8. Make sure your store is set to use Standard Checkout. In your Volusion dashboard, go to Settings > Checkout and make sure "Premium Checkout" is *not* checked.
 
-9. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ - Pay Over Time" without the quotation marks. This must be copied in without formatting so that Volusion can read it correctly. One easy way to remove any possible formatting is to copy from here into your browser URL bar, and then from there into Volusion.  Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings. 
+9. Create a Payment Method for Bread Pay. In your Volusion Dashboard, under Settings > Payment, click "More Payment Types" and, next to "Custom Type," copy the following: "Bread Pay™ — Pay Over Time" without the quotation marks. This must be copied in without formatting so that Volusion can read it correctly. One easy way to remove any possible formatting is to copy from here into your browser URL bar, and then from there into Volusion.  Click "Add." This is what your customers will choose when they check out with Bread Pay. Note the ID associated with this payment type. You will need it later when filling out your settings. 
 
 10. Once you've installed Bread Pay via SFTP, your Bread Pay Dashboard can be found at `your-store-url.com/v/bread/dashboard`. Switch out "your-store-url" for the homepage of your Volusion store website. Follow the steps for each the Bread Pay Integration fields below to finish setting up your store.
    
@@ -127,6 +127,13 @@ Checkout this box will prevent the Bread Pay button from appearing under each pr
 
 **Replace Volusion Checkout Button with Bread Pay Button when Buyer Chooses Bread Pay at Checkout**
 You have two options for how your customers will see and check out with Bread Pay. If this box is not checked, a second button will appear prompting them to click to check out with Bread, in the same way as it displays on your product detail and cart pages. If you check this box, when a customer chooses Bready Pay from the dropdown of payment options on the Checkout Page, the standard Place Order Button will disappear and be replaced with the Check out with Bread Pay button. Make sure that your Bread Pay payment method type that you created as part of your setup under Settings > Payment is properly configured and turned on. See Step 9 under Installation above for detailed instructions. We recommend checking this box to avoid confusion for your customers on where to click to check out, but it can sometimes have trouble loading on more heavily customized Volusion websites.
+
+## Buy Online Pickup In Store
+These are optional contact information fields that only need to be filled in if 1) you allow your customers to pay online and pick items up in store, and 2) you have configured your Bread Pay merchant portal for Buy Online Pickup in Store.
+They should be the contact information and store address for where the buyer will pick up their purchased item(s).
+Please reach out to Bread Pay Support if you have questions on how to configure BOPIS functionality for your store.
+
+Once BOPIS has been configured, if a buyer using Bread Pay chooses Volusion's default "In-Store Pickup" option as their shipping option at checkout, the order will be marked as BOPIS in Bread Pay. If "In-Store Pickup" has been changed or deleted from Volusion, you can create a new shipping option with that name and that should have the same effect.
 
 ## Volusion API
 These fields are required in order to connect to your Volusion Store, as well as to make sure that your customers get email confirmations from Volusion when they checkout with Bread Pay.

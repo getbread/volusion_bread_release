@@ -31,6 +31,7 @@ output.Add "bopis_address_2", dct_settings("bopis_address_2")
 output.Add "bopis_address_locality", dct_settings("bopis_address_locality")
 output.Add "bopis_address_region", dct_settings("bopis_address_region")
 output.Add "bopis_address_postalcode", dct_settings("bopis_address_postalcode")
+output.Add "bread_payment_settle", dct_settings("bread_payment_settle")
 
 Response.Write jsonHelper.Encode( output )
 %>
